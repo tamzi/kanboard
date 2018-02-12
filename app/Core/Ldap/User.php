@@ -108,12 +108,18 @@ class User
     /**
      * Get role from LDAP groups
      *
+     * Note: Do not touch the current role if groups are not configured
+     *
      * @access protected
      * @param  string[] $groupIds
      * @return string
      */
     protected function getRole(array $groupIds)
     {
+        if (! $this->hasGroupsConfigured()) {
+            return null;
+        }
+
         foreach ($groupIds as $groupId) {
             $groupId = strtolower($groupId);
 
@@ -145,7 +151,9 @@ class User
             $entry->getFirstValue($this->getAttributeName()),
             $entry->getFirstValue($this->getAttributeEmail()),
             $this->getRole($groupIds),
-            $groupIds
+            $groupIds,
+            $entry->getFirstValue($this->getAttributePhoto()),
+            $entry->getFirstValue($this->getAttributeLanguage())
         );
     }
 
@@ -164,6 +172,8 @@ class User
             $this->getAttributeName(),
             $this->getAttributeEmail(),
             $this->getAttributeGroup(),
+            $this->getAttributePhoto(),
+            $this->getAttributeLanguage(),
         )));
     }
 
@@ -224,6 +234,28 @@ class User
     }
 
     /**
+     * Get LDAP profile photo attribute
+     *
+     * @access public
+     * @return string
+     */
+    public function getAttributePhoto()
+    {
+        return strtolower(LDAP_USER_ATTRIBUTE_PHOTO);
+    }
+
+    /**
+     * Get LDAP language attribute
+     *
+     * @access public
+     * @return string
+     */
+    public function getAttributeLanguage()
+    {
+        return strtolower(LDAP_USER_ATTRIBUTE_LANGUAGE);
+    }
+
+    /**
      * Get LDAP Group User filter
      *
      * @access public
@@ -243,6 +275,17 @@ class User
     public function hasGroupUserFilter()
     {
         return $this->getGroupUserFilter() !== '' && $this->getGroupUserFilter() !== null;
+    }
+
+    /**
+     * Return true if LDAP Group mapping are configured
+     *
+     * @access public
+     * @return boolean
+     */
+    public function hasGroupsConfigured()
+    {
+        return $this->getGroupAdminDn() || $this->getGroupManagerDn();
     }
 
     /**

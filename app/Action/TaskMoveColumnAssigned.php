@@ -2,12 +2,12 @@
 
 namespace Kanboard\Action;
 
-use Kanboard\Model\Task;
+use Kanboard\Model\TaskModel;
 
 /**
  * Move a task to another column when an assignee is set
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Francois Ferrand
  */
 class TaskMoveColumnAssigned extends Base
@@ -32,8 +32,8 @@ class TaskMoveColumnAssigned extends Base
     public function getCompatibleEvents()
     {
         return array(
-            Task::EVENT_ASSIGNEE_CHANGE,
-            Task::EVENT_UPDATE,
+            TaskModel::EVENT_ASSIGNEE_CHANGE,
+            TaskModel::EVENT_UPDATE,
         );
     }
 
@@ -61,8 +61,13 @@ class TaskMoveColumnAssigned extends Base
     {
         return array(
             'task_id',
-            'column_id',
-            'owner_id'
+            'task' => array(
+                'project_id',
+                'column_id',
+                'owner_id',
+                'position',
+                'swimlane_id',
+            )
         );
     }
 
@@ -75,14 +80,12 @@ class TaskMoveColumnAssigned extends Base
      */
     public function doAction(array $data)
     {
-        $original_task = $this->taskFinder->getById($data['task_id']);
-
-        return $this->taskPosition->movePosition(
-            $data['project_id'],
+        return $this->taskPositionModel->movePosition(
+            $data['task']['project_id'],
             $data['task_id'],
             $this->getParam('dest_column_id'),
-            $original_task['position'],
-            $original_task['swimlane_id'],
+            $data['task']['position'],
+            $data['task']['swimlane_id'],
             false
         );
     }
@@ -96,6 +99,6 @@ class TaskMoveColumnAssigned extends Base
      */
     public function hasRequiredCondition(array $data)
     {
-        return $data['column_id'] == $this->getParam('src_column_id') && $data['owner_id'] > 0;
+        return $data['task']['column_id'] == $this->getParam('src_column_id') && $data['task']['owner_id'] > 0;
     }
 }

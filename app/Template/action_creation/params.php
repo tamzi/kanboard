@@ -2,11 +2,9 @@
     <h2><?= t('Define action parameters') ?></h2>
 </div>
 
-<form class="popover-form" method="post" action="<?= $this->url->href('ActionCreation', 'save', array('project_id' => $project['id'])) ?>" autocomplete="off">
-
+<form method="post" action="<?= $this->url->href('ActionCreationController', 'save', array('project_id' => $project['id'])) ?>" autocomplete="off">
     <?= $this->form->csrf() ?>
 
-    <?= $this->form->hidden('project_id', $values) ?>
     <?= $this->form->hidden('event_name', $values) ?>
     <?= $this->form->hidden('action_name', $values) ?>
 
@@ -35,18 +33,23 @@
         <?php elseif ($this->text->contains($param_name, 'link_id')): ?>
             <?= $this->form->label($param_desc, $param_name) ?>
             <?= $this->form->select('params['.$param_name.']', $links_list, $values) ?>
+        <?php elseif ($param_name === 'priority'): ?>
+            <?= $this->form->label($param_desc, $param_name) ?>
+            <?= $this->form->select('params['.$param_name.']', $priorities_list, $values) ?>
         <?php elseif ($this->text->contains($param_name, 'duration')): ?>
             <?= $this->form->label($param_desc, $param_name) ?>
             <?= $this->form->number('params['.$param_name.']', $values) ?>
+        <?php elseif ($this->text->contains($param_name, 'swimlane_id')): ?>
+            <?= $this->form->label($param_desc, $param_name) ?>
+            <?= $this->form->select('params['.$param_name.']', $swimlane_list, $values) ?>
+        <?php elseif (is_array($param_desc)): ?>
+            <?= $this->form->label(ucfirst($param_name), $param_name) ?>
+            <?= $this->form->select('params['.$param_name.']', $param_desc, $values) ?>
         <?php else: ?>
             <?= $this->form->label($param_desc, $param_name) ?>
             <?= $this->form->text('params['.$param_name.']', $values) ?>
         <?php endif ?>
     <?php endforeach ?>
 
-    <div class="form-actions">
-        <button type="submit" class="btn btn-blue"><?= t('Save') ?></button>
-        <?= t('or') ?>
-        <?= $this->url->link(t('cancel'), 'action', 'index', array('project_id' => $project['id']), false, 'close-popover') ?>
-    </div>
+    <?= $this->modal->submitButtons() ?>
 </form>

@@ -1,5 +1,5 @@
 <?php if (! empty($files)): ?>
-    <table class="table-stripped">
+    <table class="table-striped table-scrolling">
         <tr>
             <th><?= t('Filename') ?></th>
             <th><?= t('Creator') ?></th>
@@ -15,18 +15,19 @@
                         <ul>
                             <?php if ($this->file->getPreviewType($file['name']) !== null): ?>
                                 <li>
-                                    <i class="fa fa-eye fa-fw"></i>
-                                    <?= $this->url->link(t('View file'), 'FileViewer', 'show', array('project_id' => $project['id'], 'file_id' => $file['id']), false, 'popover') ?>
+                                    <?= $this->modal->large('eye', t('View file'), 'FileViewerController', 'show', array('project_id' => $project['id'], 'file_id' => $file['id'])) ?>
+                                </li>
+                            <?php elseif ($this->file->getBrowserViewType($file['name']) !== null): ?>
+                                <li>
+                                    <?= $this->url->icon('eye', t('View file'), 'FileViewerController', 'browser', array('project_id' => $project['id'], 'file_id' => $file['id']), false, '', '', true) ?>
                                 </li>
                             <?php endif ?>
                             <li>
-                                <i class="fa fa-download fa-fw"></i>
-                                <?= $this->url->link(t('Download'), 'FileViewer', 'download', array('project_id' => $project['id'], 'file_id' => $file['id'])) ?>
+                                <?= $this->url->icon('download', t('Download'), 'FileViewerController', 'download', array('project_id' => $project['id'], 'file_id' => $file['id'])) ?>
                             </li>
-                            <?php if ($this->user->hasProjectAccess('ProjectFile', 'remove', $project['id'])): ?>
+                            <?php if ($this->user->hasProjectAccess('ProjectFileController', 'remove', $project['id'])): ?>
                                 <li>
-                                    <i class="fa fa-trash fa-fw"></i>
-                                    <?= $this->url->link(t('Remove'), 'ProjectFile', 'confirm', array('project_id' => $project['id'], 'file_id' => $file['id']), false, 'popover') ?>
+                                    <?= $this->modal->confirm('trash-o', t('Remove'), 'ProjectFileController', 'confirm', array('project_id' => $project['id'], 'file_id' => $file['id'])) ?>
                                 </li>
                             <?php endif ?>
                         </ul>

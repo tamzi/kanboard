@@ -11,7 +11,7 @@ use Kanboard\Core\Security\PostAuthenticationProviderInterface;
 /**
  * TOTP Authentication Provider
  *
- * @package  auth
+ * @package  Kanboard\Auth
  * @author   Frederic Guillot
  */
 class TotpAuth extends Base implements PostAuthenticationProviderInterface
@@ -123,7 +123,8 @@ class TotpAuth extends Base implements PostAuthenticationProviderInterface
             return '';
         }
 
-        return GoogleAuthenticator::getQrCodeUrl('totp', $label, $this->secret);
+        $options = array('issuer' => TOTP_ISSUER);
+        return GoogleAuthenticator::getQrCodeUrl('totp', $label, $this->secret, null, $options);
     }
 
     /**
@@ -139,6 +140,7 @@ class TotpAuth extends Base implements PostAuthenticationProviderInterface
             return '';
         }
 
-        return GoogleAuthenticator::getKeyUri('totp', $label, $this->secret);
+        $options = array('issuer' => TOTP_ISSUER);
+        return GoogleAuthenticator::getKeyUri('totp', $label, $this->secret, null, $options);
     }
 }

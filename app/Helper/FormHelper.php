@@ -131,16 +131,34 @@ class FormHelper extends Base
      * Display a checkbox field
      *
      * @access public
-     * @param  string  $name      Field name
-     * @param  string  $label     Form label
-     * @param  string  $value     Form value
-     * @param  boolean $checked   Field selected or not
-     * @param  string  $class     CSS class
+     * @param  string  $name        Field name
+     * @param  string  $label       Form label
+     * @param  string  $value       Form value
+     * @param  boolean $checked     Field selected or not
+     * @param  string  $class       CSS class
+     * @param  array   $attributes
      * @return string
      */
-    public function checkbox($name, $label, $value, $checked = false, $class = '')
+    public function checkbox($name, $label, $value, $checked = false, $class = '', array $attributes = array())
     {
-        return '<label><input type="checkbox" name="'.$name.'" class="'.$class.'" value="'.$this->helper->text->e($value).'" '.($checked ? 'checked="checked"' : '').'>&nbsp;'.$this->helper->text->e($label).'</label>';
+        $htmlAttributes = '';
+
+        if ($checked) {
+            $attributes['checked'] = 'checked';
+        }
+
+        foreach ($attributes as $attribute => $attributeValue) {
+            $htmlAttributes .= sprintf('%s="%s"', $attribute, $this->helper->text->e($attributeValue));
+        }
+
+        return sprintf(
+            '<label><input type="checkbox" name="%s" class="%s" value="%s" %s>&nbsp;%s</label>',
+            $name,
+            $class,
+            $this->helper->text->e($value),
+            $htmlAttributes,
+            $this->helper->text->e($label)
+        );
     }
 
     /**
@@ -174,8 +192,47 @@ class FormHelper extends Base
 
         $html = '<textarea name="'.$name.'" id="form-'.$name.'" class="'.$class.'" ';
         $html .= implode(' ', $attributes).'>';
-        $html .= isset($values->$name) ? $this->helper->text->e($values->$name) : isset($values[$name]) ? $values[$name] : '';
+        $html .= isset($values[$name]) ? $this->helper->text->e($values[$name]) : '';
         $html .= '</textarea>';
+        $html .= $this->errorList($errors, $name);
+
+        return $html;
+    }
+
+    /**
+     * Display a markdown editor
+     *
+     * @access public
+     * @param  string  $name     Field name
+     * @param  array   $values   Form values
+     * @param  array   $errors   Form errors
+     * @param  array   $attributes
+     * @return string
+     */
+    public function textEditor($name, $values = array(), array $errors = array(), array $attributes = array())
+    {
+        $params = array(
+            'name' => $name,
+            'text' => isset($values[$name]) ? $values[$name] : '',
+            'css' => $this->errorClass($errors, $name),
+            'required' => isset($attributes['required']) && $attributes['required'],
+            'tabindex' => isset($attributes['tabindex']) ? $attributes['tabindex'] : '-1',
+            'labelPreview' => t('Preview'),
+            'labelWrite' => t('Write'),
+            'placeholder' => t('Write your text in Markdown'),
+            'autofocus' => isset($attributes['autofocus']) && $attributes['autofocus'],
+            'suggestOptions' => array(
+                'triggers' => array(
+                    '#' => $this->helper->url->to('TaskAjaxController', 'suggest', array('search' => 'SEARCH_TERM')),
+                )
+            ),
+        );
+
+        if (isset($values['project_id'])) {
+            $params['suggestOptions']['triggers']['@'] = $this->helper->url->to('UserAjaxController', 'mention', array('project_id' => $values['project_id'], 'search' => 'SEARCH_TERM'));
+        }
+
+        $html = '<div class="js-text-editor" data-params=\''.json_encode($params, JSON_HEX_APOS).'\'></div>';
         $html .= $this->errorList($errors, $name);
 
         return $html;
@@ -304,6 +361,48 @@ class FormHelper extends Base
     public function numeric($name, $values = array(), array $errors = array(), array $attributes = array(), $class = '')
     {
         return $this->input('text', $name, $values, $errors, $attributes, $class.' form-numeric');
+    }
+
+    /**
+     * Date field
+     *
+     * @access public
+     * @param  string $label
+     * @param  string $name
+     * @param  array  $values
+     * @param  array  $errors
+     * @param  array  $attributes
+     * @return string
+     */
+    public function date($label, $name, array $values, array $errors = array(), array $attributes = array())
+    {
+        $userFormat = $this->dateParser->getUserDateFormat();
+        $values = $this->dateParser->format($values, array($name), $userFormat);
+        $attributes = array_merge(array('placeholder="'.date($userFormat).'"'), $attributes);
+
+        return $this->helper->form->label($label, $name) .
+            $this->helper->form->text($name, $values, $errors, $attributes, 'form-date');
+    }
+
+    /**
+     * Datetime field
+     *
+     * @access public
+     * @param  string $label
+     * @param  string $name
+     * @param  array  $values
+     * @param  array  $errors
+     * @param  array  $attributes
+     * @return string
+     */
+    public function datetime($label, $name, array $values, array $errors = array(), array $attributes = array())
+    {
+        $userFormat = $this->dateParser->getUserDateTimeFormat();
+        $values = $this->dateParser->format($values, array($name), $userFormat);
+        $attributes = array_merge(array('placeholder="'.date($userFormat).'"'), $attributes);
+
+        return $this->helper->form->label($label, $name) .
+            $this->helper->form->text($name, $values, $errors, $attributes, 'form-datetime');
     }
 
     /**

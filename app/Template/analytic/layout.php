@@ -1,13 +1,14 @@
-<section id="main">
-    <?= $this->projectHeader->render($project, 'Listing', 'show') ?>
-    <section class="sidebar-container">
-        <?= $this->render($sidebar_template, array('project' => $project)) ?>
+<?php if ($is_ajax): ?>
+    <div class="page-header">
+        <h2><?= $title ?></h2>
+    </div>
+<?php else: ?>
+    <?= $this->projectHeader->render($project, 'TaskListController', 'show') ?>
+<?php endif ?>
+<section class="sidebar-container">
+    <?= $this->render($sidebar_template, array('project' => $project)) ?>
 
-        <div class="sidebar-content">
-            <?= $content_for_sublayout ?>
-        </div>
-    </section>
+    <div class="sidebar-content">
+        <?= $content_for_sublayout ?>
+    </div>
 </section>
-
-<?= $this->asset->js('assets/js/vendor/d3.v3.min.js') ?>
-<?= $this->asset->js('assets/js/vendor/c3.min.js') ?>

@@ -12,15 +12,31 @@ defined('DATA_DIR') or define('DATA_DIR', ROOT_DIR.DIRECTORY_SEPARATOR.'data');
 // Files directory (attachments)
 defined('FILES_DIR') or define('FILES_DIR', DATA_DIR.DIRECTORY_SEPARATOR.'files');
 
-// Plugins directory
+// Available cache drivers are "file" and "memory"
+defined('CACHE_DRIVER') or define('CACHE_DRIVER', 'memory');
+
+// Cache folder (file driver)
+defined('CACHE_DIR') or define('CACHE_DIR', DATA_DIR.DIRECTORY_SEPARATOR.'cache');
+
+// Plugins settings
 defined('PLUGINS_DIR') or define('PLUGINS_DIR', ROOT_DIR.DIRECTORY_SEPARATOR.'plugins');
+defined('PLUGIN_API_URL') or define('PLUGIN_API_URL', 'https://kanboard.org/plugins.json');
+defined('PLUGIN_INSTALLER') or define('PLUGIN_INSTALLER', true);
 
 // Enable/disable debug
-defined('DEBUG') or define('DEBUG', getenv('DEBUG'));
-defined('DEBUG_FILE') or define('DEBUG_FILE', getenv('DEBUG_FILE') ?: DATA_DIR.DIRECTORY_SEPARATOR.'debug.log');
+defined('DEBUG') or define('DEBUG', strtolower(getenv('DEBUG')) === 'true');
+
+// Logging drivers: syslog, stdout, stderr or file
+defined('LOG_DRIVER') or define('LOG_DRIVER', '');
+
+// Logging file
+defined('LOG_FILE') or define('LOG_FILE', DATA_DIR.DIRECTORY_SEPARATOR.'debug.log');
 
 // Application version
 defined('APP_VERSION') or define('APP_VERSION', build_app_version('$Format:%d$', '$Format:%H$'));
+
+// Run automatically database migrations
+defined('DB_RUN_MIGRATIONS') or define('DB_RUN_MIGRATIONS', true);
 
 // Database driver: sqlite, mysql or postgres
 defined('DB_DRIVER') or define('DB_DRIVER', 'sqlite');
@@ -34,9 +50,14 @@ defined('DB_PASSWORD') or define('DB_PASSWORD', '');
 defined('DB_HOSTNAME') or define('DB_HOSTNAME', 'localhost');
 defined('DB_NAME') or define('DB_NAME', 'kanboard');
 defined('DB_PORT') or define('DB_PORT', null);
+defined('DB_SSL_KEY') or define('DB_SSL_KEY', null);
+defined('DB_SSL_CERT') or define('DB_SSL_CERT', null);
+defined('DB_SSL_CA') or define('DB_SSL_CA', null);
+defined('DB_VERIFY_SERVER_CERT') or define('DB_VERIFY_SERVER_CERT', null);
 
 // Database backend group provider
 defined('DB_GROUP_PROVIDER') or define('DB_GROUP_PROVIDER', true);
+defined('DB_USER_PROVIDER') or define('DB_USER_PROVIDER', true);
 
 // LDAP configuration
 defined('LDAP_AUTH') or define('LDAP_AUTH', false);
@@ -56,6 +77,8 @@ defined('LDAP_USER_ATTRIBUTE_USERNAME') or define('LDAP_USER_ATTRIBUTE_USERNAME'
 defined('LDAP_USER_ATTRIBUTE_FULLNAME') or define('LDAP_USER_ATTRIBUTE_FULLNAME', 'cn');
 defined('LDAP_USER_ATTRIBUTE_EMAIL') or define('LDAP_USER_ATTRIBUTE_EMAIL', 'mail');
 defined('LDAP_USER_ATTRIBUTE_GROUPS') or define('LDAP_USER_ATTRIBUTE_GROUPS', 'memberof');
+defined('LDAP_USER_ATTRIBUTE_PHOTO') or define('LDAP_USER_ATTRIBUTE_PHOTO', '');
+defined('LDAP_USER_ATTRIBUTE_LANGUAGE') or define('LDAP_USER_ATTRIBUTE_LANGUAGE', '');
 defined('LDAP_USER_CREATION') or define('LDAP_USER_CREATION', true);
 
 defined('LDAP_GROUP_ADMIN_DN') or define('LDAP_GROUP_ADMIN_DN', '');
@@ -77,6 +100,7 @@ defined('REVERSE_PROXY_DEFAULT_DOMAIN') or define('REVERSE_PROXY_DEFAULT_DOMAIN'
 defined('REMEMBER_ME_AUTH') or define('REMEMBER_ME_AUTH', true);
 
 // Mail configuration
+defined('MAIL_CONFIGURATION') or define('MAIL_CONFIGURATION', true);
 defined('MAIL_FROM') or define('MAIL_FROM', 'notifications@kanboard.local');
 defined('MAIL_TRANSPORT') or define('MAIL_TRANSPORT', 'mail');
 defined('MAIL_SMTP_HOSTNAME') or define('MAIL_SMTP_HOSTNAME', '');
@@ -91,9 +115,6 @@ defined('ENABLE_HSTS') or define('ENABLE_HSTS', true);
 
 // Enable or disable "X-Frame-Options: DENY" HTTP header
 defined('ENABLE_XFRAME') or define('ENABLE_XFRAME', true);
-
-// Syslog
-defined('ENABLE_SYSLOG') or define('ENABLE_SYSLOG', getenv('ENABLE_SYSLOG'));
 
 // Escape html inside markdown text
 defined('MARKDOWN_ESCAPE_HTML') or define('MARKDOWN_ESCAPE_HTML', true);
@@ -119,8 +140,14 @@ defined('BRUTEFORCE_LOCKDOWN_DURATION') or define('BRUTEFORCE_LOCKDOWN_DURATION'
 // See http://php.net/manual/en/session.configuration.php#ini.session.cookie-lifetime
 defined('SESSION_DURATION') or define('SESSION_DURATION', 0);
 
-// HTTP client proxy
+// HTTP Client
 defined('HTTP_PROXY_HOSTNAME') or define('HTTP_PROXY_HOSTNAME', '');
 defined('HTTP_PROXY_PORT') or define('HTTP_PROXY_PORT', '3128');
 defined('HTTP_PROXY_USERNAME') or define('HTTP_PROXY_USERNAME', '');
 defined('HTTP_PROXY_PASSWORD') or define('HTTP_PROXY_PASSWORD', '');
+defined('HTTP_VERIFY_SSL_CERTIFICATE') or define('HTTP_VERIFY_SSL_CERTIFICATE', true);
+
+defined('TOTP_ISSUER') or define('TOTP_ISSUER', 'Kanboard');
+
+// Comma separated list of fields to not synchronize when using external authentication providers
+defined('EXTERNAL_AUTH_EXCLUDE_FIELDS') or define('EXTERNAL_AUTH_EXCLUDE_FIELDS', 'username');

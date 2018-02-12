@@ -2,12 +2,12 @@
 
 namespace Kanboard\Action;
 
-use Kanboard\Model\Task;
+use Kanboard\Model\TaskModel;
 
 /**
  * Email a task to someone
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Frederic Guillot
  */
 class TaskEmail extends Base
@@ -32,8 +32,9 @@ class TaskEmail extends Base
     public function getCompatibleEvents()
     {
         return array(
-            Task::EVENT_MOVE_COLUMN,
-            Task::EVENT_CLOSE,
+            TaskModel::EVENT_MOVE_COLUMN,
+            TaskModel::EVENT_CLOSE,
+            TaskModel::EVENT_CREATE,
         );
     }
 
@@ -62,7 +63,10 @@ class TaskEmail extends Base
     {
         return array(
             'task_id',
-            'column_id',
+            'task' => array(
+                'project_id',
+                'column_id',
+            ),
         );
     }
 
@@ -75,16 +79,16 @@ class TaskEmail extends Base
      */
     public function doAction(array $data)
     {
-        $user = $this->user->getById($this->getParam('user_id'));
+        $user = $this->userModel->getById($this->getParam('user_id'));
 
         if (! empty($user['email'])) {
-            $task = $this->taskFinder->getDetails($data['task_id']);
-
             $this->emailClient->send(
                 $user['email'],
                 $user['name'] ?: $user['username'],
                 $this->getParam('subject'),
-                $this->template->render('notification/task_create', array('task' => $task, 'application_url' => $this->config->get('application_url')))
+                $this->template->render('notification/task_create', array(
+                    'task' => $data['task'],
+                ))
             );
 
             return true;
@@ -102,6 +106,6 @@ class TaskEmail extends Base
      */
     public function hasRequiredCondition(array $data)
     {
-        return $data['column_id'] == $this->getParam('column_id');
+        return $data['task']['column_id'] == $this->getParam('column_id');
     }
 }

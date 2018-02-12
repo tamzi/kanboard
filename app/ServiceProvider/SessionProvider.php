@@ -5,13 +5,12 @@ namespace Kanboard\ServiceProvider;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Kanboard\Core\Session\SessionManager;
-use Kanboard\Core\Session\SessionStorage;
 use Kanboard\Core\Session\FlashMessage;
 
 /**
  * Session Provider
  *
- * @package serviceProvider
+ * @package Kanboard\ServiceProvider
  * @author  Frederic Guillot
  */
 class SessionProvider implements ServiceProviderInterface
@@ -25,10 +24,6 @@ class SessionProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
-        $container['sessionStorage'] = function() {
-            return new SessionStorage;
-        };
-
         $container['sessionManager'] = function($c) {
             return new SessionManager($c);
         };

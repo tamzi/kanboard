@@ -5,8 +5,8 @@ namespace Kanboard\Core\Plugin;
 /**
  * Plugin Hooks Handler
  *
- * @package  plugin
- * @author   Frederic Guillot
+ * @package Kanboard\Core\Plugin
+ * @author  Frederic Guillot
  */
 class Hook
 {
@@ -95,5 +95,22 @@ class Hook
         }
 
         return null;
+    }
+
+    /**
+     * Hook with reference
+     *
+     * @access public
+     * @param  string $hook
+     * @param  mixed  $param
+     * @return mixed
+     */
+    public function reference($hook, &$param)
+    {
+        foreach ($this->getListeners($hook) as $listener) {
+            $listener($param);
+        }
+
+        return $param;
     }
 }

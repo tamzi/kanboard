@@ -23,54 +23,13 @@ Kanboard.App.prototype.execute = function() {
             if (typeof controller.focus === "function") {
                 controller.focus();
             }
-
-            if (typeof controller.keyboardShortcuts === "function") {
-                controller.keyboardShortcuts();
-            }
         }
     }
 
     this.focus();
-    this.chosen();
-    this.keyboardShortcuts();
     this.datePicker();
     this.autoComplete();
-};
-
-Kanboard.App.prototype.keyboardShortcuts = function() {
-    var self = this;
-
-    // Submit form
-    Mousetrap.bindGlobal("mod+enter", function() {
-        var forms = $("form");
-
-        if (forms.length == 1) {
-            forms.submit();
-        } else if (forms.length > 1) {
-            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-                $(document.activeElement).parents("form").submit();
-            } else if (self.get("Popover").isOpen()) {
-                $("#popover-container form").submit();
-            }
-        }
-    });
-
-    // Open board selector
-    Mousetrap.bind("b", function(e) {
-        e.preventDefault();
-        $('#board-selector').trigger('chosen:open');
-    });
-
-    // Close popover and dropdown
-    Mousetrap.bindGlobal("esc", function() {
-        self.get("Popover").close();
-        self.get("Dropdown").close();
-    });
-
-    // Show keyboard shortcut
-    Mousetrap.bind("?", function() {
-        self.get("Popover").open($("body").data("keyboard-shortcut-url"));
-    });
+    this.tagAutoComplete();
 };
 
 Kanboard.App.prototype.focus = function() {
@@ -85,46 +44,34 @@ Kanboard.App.prototype.focus = function() {
     });
 };
 
-Kanboard.App.prototype.chosen = function() {
-    $(".chosen-select").each(function() {
-        var searchThreshold = $(this).data("search-threshold");
-
-        if (searchThreshold === undefined) {
-            searchThreshold = 10;
-        }
-
-        $(this).chosen({
-            width: "180px",
-            no_results_text: $(this).data("notfound"),
-            disable_search_threshold: searchThreshold
-        });
-    });
-
-    $(".select-auto-redirect").change(function() {
-        var regex = new RegExp($(this).data('redirect-regex'), 'g');
-        window.location = $(this).data('redirect-url').replace(regex, $(this).val());
-    });
-};
-
 Kanboard.App.prototype.datePicker = function() {
-    // Datepicker translation
-    $.datepicker.setDefaults($.datepicker.regional[$("body").data("js-lang")]);
+    var bodyElement = $("body");
+    var dateFormat = bodyElement.data("js-date-format");
+    var timeFormat = bodyElement.data("js-time-format");
+    var lang = bodyElement.data("js-lang");
+
+    $.datepicker.setDefaults($.datepicker.regional[lang]);
+    $.timepicker.setDefaults($.timepicker.regional[lang]);
 
     // Datepicker
     $(".form-date").datepicker({
         showOtherMonths: true,
         selectOtherMonths: true,
-        dateFormat: 'yy-mm-dd',
+        dateFormat: dateFormat,
         constrainInput: false
     });
 
     // Datetime picker
     $(".form-datetime").datetimepicker({
-        controlType: 'select',
-        oneLine: true,
-        dateFormat: 'yy-mm-dd',
-        // timeFormat: 'h:mm tt',
+        dateFormat: dateFormat,
+        timeFormat: timeFormat,
         constrainInput: false
+    });
+};
+
+Kanboard.App.prototype.tagAutoComplete = function() {
+    $(".tag-autocomplete").select2({
+        tags: true
     });
 };
 
@@ -132,9 +79,9 @@ Kanboard.App.prototype.autoComplete = function() {
     $(".autocomplete").each(function() {
         var input = $(this);
         var field = input.data("dst-field");
-        var extraField = input.data("dst-extra-field");
+        var extraFields = input.data("dst-extra-fields");
 
-        if ($('#form-' + field).val() == '') {
+        if ($('#form-' + field).val() === '') {
             input.parent().find("button[type=submit]").attr('disabled','disabled');
         }
 
@@ -144,8 +91,13 @@ Kanboard.App.prototype.autoComplete = function() {
             select: function(event, ui) {
                 $("input[name=" + field + "]").val(ui.item.id);
 
-                if (extraField) {
-                    $("input[name=" + extraField + "]").val(ui.item[extraField]);
+                if (extraFields) {
+                    var fields = extraFields.split(',');
+
+                    for (var i = 0; i < fields.length; i++) {
+                        var fieldName = fields[i].trim();
+                        $("input[name=" + fieldName + "]").val(ui.item[fieldName]);
+                    }
                 }
 
                 input.parent().find("button[type=submit]").removeAttr('disabled');
@@ -164,38 +116,4 @@ Kanboard.App.prototype.showLoadingIcon = function() {
 
 Kanboard.App.prototype.hideLoadingIcon = function() {
     $("#app-loading-icon").remove();
-};
-
-Kanboard.App.prototype.formatDuration = function(d) {
-    if (d >= 86400) {
-        return Math.round(d/86400) + "d";
-    }
-    else if (d >= 3600) {
-        return Math.round(d/3600) + "h";
-    }
-    else if (d >= 60) {
-        return Math.round(d/60) + "m";
-    }
-
-    return d + "s";
-};
-
-Kanboard.App.prototype.isVisible = function() {
-    var property = "";
-
-    if (typeof document.hidden !== "undefined") {
-        property = "visibilityState";
-    } else if (typeof document.mozHidden !== "undefined") {
-        property = "mozVisibilityState";
-    } else if (typeof document.msHidden !== "undefined") {
-        property = "msVisibilityState";
-    } else if (typeof document.webkitHidden !== "undefined") {
-        property = "webkitVisibilityState";
-    }
-
-    if (property != "") {
-        return document[property] == "visible";
-    }
-
-    return true;
 };

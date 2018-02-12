@@ -3,7 +3,8 @@
 namespace Kanboard\Formatter;
 
 use Kanboard\Core\Filter\FormatterInterface;
-use Kanboard\Model\Task;
+use Kanboard\Model\SwimlaneModel;
+use Kanboard\Model\TaskModel;
 
 /**
  * Board Formatter
@@ -28,7 +29,7 @@ class BoardFormatter extends BaseFormatter implements FormatterInterface
      * @param  integer $projectId
      * @return $this
      */
-    public function setProjectId($projectId)
+    public function withProjectId($projectId)
     {
         $this->projectId = $projectId;
         return $this;
@@ -42,15 +43,28 @@ class BoardFormatter extends BaseFormatter implements FormatterInterface
      */
     public function format()
     {
+        $swimlanes = $this->swimlaneModel->getAllByStatus($this->projectId, SwimlaneModel::ACTIVE);
+        $columns = $this->columnModel->getAll($this->projectId);
+
+        if (empty($swimlanes) || empty($columns)) {
+            return array();
+        }
+
+        $this->hook->reference('formatter:board:query', $this->query);
+
         $tasks = $this->query
-            ->eq(Task::TABLE.'.project_id', $this->projectId)
-            ->asc(Task::TABLE.'.position')
+            ->eq(TaskModel::TABLE.'.project_id', $this->projectId)
+            ->asc(TaskModel::TABLE.'.position')
             ->findAll();
 
-        return $this->board->getBoard($this->projectId, function ($project_id, $column_id, $swimlane_id) use ($tasks) {
-            return array_filter($tasks, function (array $task) use ($column_id, $swimlane_id) {
-                return $task['column_id'] == $column_id && $task['swimlane_id'] == $swimlane_id;
-            });
-        });
+        $task_ids = array_column($tasks, 'id');
+        $tags = $this->taskTagModel->getTagsByTaskIds($task_ids);
+
+        return $this->boardSwimlaneFormatter
+            ->withSwimlanes($swimlanes)
+            ->withColumns($columns)
+            ->withTasks($tasks)
+            ->withTags($tags)
+            ->format();
     }
 }

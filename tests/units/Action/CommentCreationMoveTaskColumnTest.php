@@ -2,33 +2,33 @@
 
 require_once __DIR__.'/../Base.php';
 
-use Kanboard\Event\GenericEvent;
-use Kanboard\Model\Task;
-use Kanboard\Model\TaskCreation;
-use Kanboard\Model\Comment;
-use Kanboard\Model\Project;
+use Kanboard\Event\TaskEvent;
+use Kanboard\Model\TaskModel;
+use Kanboard\Model\TaskCreationModel;
+use Kanboard\Model\CommentModel;
+use Kanboard\Model\ProjectModel;
 use Kanboard\Action\CommentCreationMoveTaskColumn;
 
 class CommentCreationMoveTaskColumnTest extends Base
 {
     public function testSuccess()
     {
-        $this->container['sessionStorage']->user = array('id' => 1);
+        $_SESSION['user'] = array('id' => 1);
 
-        $projectModel = new Project($this->container);
-        $commentModel = new Comment($this->container);
-        $taskCreationModel = new TaskCreation($this->container);
+        $projectModel = new ProjectModel($this->container);
+        $commentModel = new CommentModel($this->container);
+        $taskCreationModel = new TaskCreationModel($this->container);
 
         $this->assertEquals(1, $projectModel->create(array('name' => 'test1')));
         $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1, 'title' => 'test')));
 
-        $event = new GenericEvent(array('project_id' => 1, 'task_id' => 1, 'column_id' => 2));
+        $event = new TaskEvent(array('task' => array('project_id' => 1, 'column_id' => 2), 'task_id' => 1));
 
         $action = new CommentCreationMoveTaskColumn($this->container);
         $action->setProjectId(1);
         $action->setParam('column_id', 2);
 
-        $this->assertTrue($action->execute($event, Task::EVENT_MOVE_COLUMN));
+        $this->assertTrue($action->execute($event, TaskModel::EVENT_MOVE_COLUMN));
 
         $comment = $commentModel->getById(1);
         $this->assertNotEmpty($comment);
@@ -39,19 +39,18 @@ class CommentCreationMoveTaskColumnTest extends Base
 
     public function testWithUserNotLogged()
     {
-        $projectModel = new Project($this->container);
-        $commentModel = new Comment($this->container);
-        $taskCreationModel = new TaskCreation($this->container);
+        $projectModel = new ProjectModel($this->container);
+        $taskCreationModel = new TaskCreationModel($this->container);
 
         $this->assertEquals(1, $projectModel->create(array('name' => 'test1')));
         $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1, 'title' => 'test')));
 
-        $event = new GenericEvent(array('project_id' => 1, 'task_id' => 1, 'column_id' => 3));
+        $event = new TaskEvent(array('task' => array('project_id' => 1, 'column_id' => 3), 'task_id' => 1));
 
         $action = new CommentCreationMoveTaskColumn($this->container);
         $action->setProjectId(1);
         $action->setParam('column_id', 2);
 
-        $this->assertFalse($action->execute($event, Task::EVENT_MOVE_COLUMN));
+        $this->assertFalse($action->execute($event, TaskModel::EVENT_MOVE_COLUMN));
     }
 }

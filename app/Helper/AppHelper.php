@@ -12,17 +12,39 @@ use Kanboard\Core\Base;
  */
 class AppHelper extends Base
 {
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    public function isAjax()
+    {
+        return $this->request->isAjax();
+    }
+
+    /**
+     * Render Javascript component
+     *
+     * @param  string $name
+     * @param  array  $params
+     * @return string
+     */
+    public function component($name, array $params = array())
+    {
+        return '<div class="js-'.$name.'" data-params=\''.json_encode($params, JSON_HEX_APOS).'\'></div>';
+    }
+
     /**
      * Get config variable
      *
      * @access public
      * @param  string $param
-     * @param  mixed  $default_value
+     * @param  mixed  $default
      * @return mixed
      */
-    public function config($param, $default_value = '')
+    public function config($param, $default = '')
     {
-        return $this->config->get($param, $default_value);
+        return $this->configModel->get($param, $default);
     }
 
     /**
@@ -90,7 +112,40 @@ class AppHelper extends Base
      */
     public function jsLang()
     {
-        return $this->config->getJsLanguageCode();
+        return $this->languageModel->getJsLanguageCode();
+    }
+
+    /**
+     * Get date format for Jquery DatePicker
+     *
+     * @access public
+     * @return string
+     */
+    public function getJsDateFormat()
+    {
+        $format = $this->dateParser->getUserDateFormat();
+        $format = str_replace('m', 'mm', $format);
+        $format = str_replace('Y', 'yy', $format);
+        $format = str_replace('d', 'dd', $format);
+
+        return $format;
+    }
+
+    /**
+     * Get time format for Jquery Plugin DateTimePicker
+     *
+     * @access public
+     * @return string
+     */
+    public function getJsTimeFormat()
+    {
+        $format = $this->dateParser->getUserTimeFormat();
+        $format = str_replace('H', 'HH', $format);
+        $format = str_replace('i', 'mm', $format);
+        $format = str_replace('g', 'h', $format);
+        $format = str_replace('a', 'tt', $format);
+
+        return $format;
     }
 
     /**
@@ -101,7 +156,7 @@ class AppHelper extends Base
      */
     public function getTimezone()
     {
-        return $this->config->getCurrentTimezone();
+        return $this->timezoneModel->getCurrentTimezone();
     }
 
     /**

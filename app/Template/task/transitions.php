@@ -1,6 +1,9 @@
-<div class="task-show-title color-<?= $task['color_id'] ?>">
-    <h2><?= $this->text->e($task['title']) ?></h2>
-</div>
+<?= $this->render('task/details', array(
+    'task' => $task,
+    'tags' => $tags,
+    'project' => $project,
+    'editable' => false,
+)) ?>
 
 <div class="page-header">
     <h2><?= t('Transitions') ?></h2>
@@ -9,7 +12,7 @@
 <?php if (empty($transitions)): ?>
     <p class="alert"><?= t('There is nothing to show.') ?></p>
 <?php else: ?>
-    <table class="table-stripped">
+    <table class="table-striped table-scrolling">
         <tr>
             <th><?= t('Date') ?></th>
             <th><?= t('Source column') ?></th>
@@ -22,7 +25,7 @@
             <td><?= $this->dt->datetime($transition['date']) ?></td>
             <td><?= $this->text->e($transition['src_column']) ?></td>
             <td><?= $this->text->e($transition['dst_column']) ?></td>
-            <td><?= $this->url->link($this->text->e($transition['name'] ?: $transition['username']), 'user', 'show', array('user_id' => $transition['user_id'])) ?></td>
+            <td><?= $this->url->link($this->text->e($transition['name'] ?: $transition['username']), 'UserViewController', 'show', array('user_id' => $transition['user_id'])) ?></td>
             <td><?= $this->dt->duration($transition['time_spent']) ?></td>
         </tr>
         <?php endforeach ?>

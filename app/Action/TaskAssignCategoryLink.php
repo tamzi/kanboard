@@ -2,12 +2,12 @@
 
 namespace Kanboard\Action;
 
-use Kanboard\Model\TaskLink;
+use Kanboard\Model\TaskLinkModel;
 
 /**
  * Set a category automatically according to a task link
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Olivier Maridat
  * @author  Frederic Guillot
  */
@@ -33,7 +33,7 @@ class TaskAssignCategoryLink extends Base
     public function getCompatibleEvents()
     {
         return array(
-            TaskLink::EVENT_CREATE_UPDATE,
+            TaskLinkModel::EVENT_CREATE_UPDATE,
         );
     }
 
@@ -60,8 +60,10 @@ class TaskAssignCategoryLink extends Base
     public function getEventRequiredParameters()
     {
         return array(
-            'task_id',
-            'link_id',
+            'task_link' => array(
+                'task_id',
+                'link_id',
+            )
         );
     }
 
@@ -75,11 +77,11 @@ class TaskAssignCategoryLink extends Base
     public function doAction(array $data)
     {
         $values = array(
-            'id' => $data['task_id'],
+            'id' => $data['task_link']['task_id'],
             'category_id' => $this->getParam('category_id'),
         );
 
-        return $this->taskModification->update($values);
+        return $this->taskModificationModel->update($values);
     }
 
     /**
@@ -91,9 +93,8 @@ class TaskAssignCategoryLink extends Base
      */
     public function hasRequiredCondition(array $data)
     {
-        if ($data['link_id'] == $this->getParam('link_id')) {
-            $task = $this->taskFinder->getById($data['task_id']);
-            return empty($task['category_id']);
+        if ($data['task_link']['link_id'] == $this->getParam('link_id')) {
+            return empty($data['task']['category_id']);
         }
 
         return false;

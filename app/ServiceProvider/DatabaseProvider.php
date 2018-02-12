@@ -8,19 +8,41 @@ use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use PicoDb\Database;
 
+/**
+ * Class DatabaseProvider
+ *
+ * @package Kanboard\ServiceProvider
+ * @author  Frederic Guillot
+ */
 class DatabaseProvider implements ServiceProviderInterface
 {
+    /**
+     * Register provider
+     *
+     * @access public
+     * @param  Container $container
+     * @return Container
+     */
     public function register(Container $container)
     {
         $container['db'] = $this->getInstance();
-        $container['db']->stopwatch = DEBUG;
-        $container['db']->logQueries = DEBUG;
+
+        if (DB_RUN_MIGRATIONS) {
+            self::runMigrations($container['db']);
+        }
+
+        if (DEBUG) {
+            $container['db']->getStatementHandler()
+                ->withLogging()
+                ->withStopWatch()
+            ;
+        }
 
         return $container;
     }
 
     /**
-     * Setup the database driver and execute schema migration
+     * Setup the database driver
      *
      * @access public
      * @return \PicoDb\Database
@@ -41,12 +63,39 @@ class DatabaseProvider implements ServiceProviderInterface
                 throw new LogicException('Database driver not supported');
         }
 
-        if ($db->schema()->check(\Schema\VERSION)) {
-            return $db;
-        } else {
+        return $db;
+    }
+
+    /**
+     * Get current database version
+     *
+     * @static
+     * @access public
+     * @param  Database $db
+     * @return int
+     */
+    public static function getSchemaVersion(Database $db)
+    {
+        return $db->getDriver()->getSchemaVersion();
+    }
+
+    /**
+     * Execute database migrations
+     *
+     * @static
+     * @access public
+     * @throws RuntimeException
+     * @param  Database $db
+     * @return bool
+     */
+    public static function runMigrations(Database $db)
+    {
+        if (! $db->schema()->check(\Schema\VERSION)) {
             $messages = $db->getLogMessages();
             throw new RuntimeException('Unable to run SQL migrations: '.implode(', ', $messages).' (You may have to fix it manually)');
         }
+
+        return true;
     }
 
     /**
@@ -61,7 +110,7 @@ class DatabaseProvider implements ServiceProviderInterface
 
         return new Database(array(
             'driver' => 'sqlite',
-            'filename' => DB_FILENAME
+            'filename' => DB_FILENAME,
         ));
     }
 
@@ -83,6 +132,10 @@ class DatabaseProvider implements ServiceProviderInterface
             'database' => DB_NAME,
             'charset'  => 'utf8',
             'port'     => DB_PORT,
+            'ssl_key'  => DB_SSL_KEY,
+            'ssl_ca'   => DB_SSL_CA,
+            'ssl_cert' => DB_SSL_CERT,
+            'verify_server_cert' => DB_VERIFY_SERVER_CERT,
         ));
     }
 

@@ -3,7 +3,6 @@
 namespace Kanboard\Formatter;
 
 use Kanboard\Core\Base;
-use Kanboard\Core\Filter\FormatterInterface;
 use PicoDb\Table;
 
 /**
@@ -27,7 +26,7 @@ abstract class BaseFormatter extends Base
      *
      * @access public
      * @param  Table $query
-     * @return FormatterInterface
+     * @return $this
      */
     public function withQuery(Table $query)
     {

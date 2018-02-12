@@ -3,7 +3,7 @@
 require_once __DIR__.'/../Base.php';
 
 use Kanboard\Auth\DatabaseAuth;
-use Kanboard\Model\User;
+use Kanboard\Model\UserModel;
 
 class DatabaseAuthTest extends Base
 {
@@ -41,22 +41,22 @@ class DatabaseAuthTest extends Base
 
     public function testIsvalidSession()
     {
-        $userModel = new User($this->container);
+        $userModel = new UserModel($this->container);
         $provider = new DatabaseAuth($this->container);
 
         $this->assertFalse($provider->isValidSession());
 
         $this->assertEquals(2, $userModel->create(array('username' => 'foobar')));
 
-        $this->container['sessionStorage']->user = array('id' => 2);
+        $_SESSION['user'] = array('id' => 2);
         $this->assertTrue($provider->isValidSession());
 
-        $this->container['sessionStorage']->user = array('id' => 3);
+        $_SESSION['user'] = array('id' => 3);
         $this->assertFalse($provider->isValidSession());
 
         $this->assertTrue($userModel->disable(2));
 
-        $this->container['sessionStorage']->user = array('id' => 2);
+        $_SESSION['user'] = array('id' => 2);
         $this->assertFalse($provider->isValidSession());
     }
 }

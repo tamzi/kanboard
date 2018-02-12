@@ -2,13 +2,14 @@
 
 namespace Kanboard\Core\Mail;
 
+use Kanboard\Job\EmailJob;
 use Pimple\Container;
 use Kanboard\Core\Base;
 
 /**
  * Mail Client
  *
- * @package  mail
+ * @package  Kanboard\Core\Mail
  * @author   Frederic Guillot
  */
 class Client extends Base
@@ -37,32 +38,59 @@ class Client extends Base
      * Send a HTML email
      *
      * @access public
-     * @param  string  $email
-     * @param  string  $name
+     * @param  string  $recipientEmail
+     * @param  string  $recipientName
      * @param  string  $subject
      * @param  string  $html
      * @return Client
      */
-    public function send($email, $name, $subject, $html)
+    public function send($recipientEmail, $recipientName, $subject, $html)
     {
-        if (! empty($email)) {
-            $this->logger->debug('Sending email to '.$email.' ('.MAIL_TRANSPORT.')');
-
-            $start_time = microtime(true);
-            $author = 'Kanboard';
-
-            if ($this->userSession->isLogged()) {
-                $author = e('%s via Kanboard', $this->helper->user->getFullname());
-            }
-
-            $this->getTransport(MAIL_TRANSPORT)->sendEmail($email, $name, $subject, $html, $author);
-
-            if (DEBUG) {
-                $this->logger->debug('Email sent in '.round(microtime(true) - $start_time, 6).' seconds');
-            }
+        if (! empty($recipientEmail)) {
+            $this->queueManager->push(EmailJob::getInstance($this->container)->withParams(
+                $recipientEmail,
+                $recipientName,
+                $subject,
+                $html,
+                $this->getAuthorName(),
+                $this->getAuthorEmail()
+            ));
         }
 
         return $this;
+    }
+
+    /**
+     * Get author name
+     *
+     * @access public
+     * @return string
+     */
+    public function getAuthorName()
+    {
+        $author = 'Kanboard';
+
+        if ($this->userSession->isLogged()) {
+            $author = e('%s via Kanboard', $this->helper->user->getFullname());
+        }
+
+        return $author;
+    }
+
+    /**
+     * Get author email
+     *
+     * @access public
+     * @return string
+     */
+    public function getAuthorEmail()
+    {
+        if ($this->userSession->isLogged()) {
+            $userData = $this->userSession->getAll();
+            return ! empty($userData['email']) ? $userData['email'] : '';
+        }
+
+        return '';
     }
 
     /**
@@ -94,5 +122,17 @@ class Client extends Base
         };
 
         return $this;
+    }
+
+    /**
+     * Return the list of registered transports
+     *
+     * @access public
+     * @return array
+     */
+    public function getAvailableTransports()
+    {
+        $availableTransports = $this->transports->keys();
+        return array_combine($availableTransports, $availableTransports);
     }
 }

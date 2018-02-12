@@ -1,36 +1,33 @@
 Kanboard
 ========
 
-[![Build Status](https://travis-ci.org/fguillot/kanboard.svg)](https://travis-ci.org/fguillot/kanboard)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fguillot/kanboard/badges/quality-score.png?s=2b6490781608657cc8c43d02285bfafb4f489528)](https://scrutinizer-ci.com/g/fguillot/kanboard/)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/5e50750e-fc62-4a1f-b02a-71991123a2a7/mini.png)](https://insight.sensiolabs.com/projects/5e50750e-fc62-4a1f-b02a-71991123a2a7)
-[![Gitter chat](https://badges.gitter.im/kanboard/gitter.png)](https://gitter.im/kanboard/kanboard)
+[![Build Status](https://travis-ci.org/kanboard/kanboard.svg?branch=master)](https://travis-ci.org/kanboard/kanboard)
 
-Kanboard is a project management software that focus on the Kanban methodology.
+Kanboard is project management software that focuses on the Kanban methodology.
 
-Official website: <https://kanboard.net>
+Official website: <https://kanboard.org/>
 
-- Get a visual and clear overview of your project
+- Get a clear visual overview of your project
 - Multiple boards with the ability to drag and drop tasks
 - Open source and self-hosted
 - Super simple installation
-- Translated in many languages
-- Distributed under [MIT License](https://github.com/fguillot/kanboard/blob/master/LICENSE)
-- The complete [list of features are available on the website](https://kanboard.net/features)
-- [Change Log](https://github.com/fguillot/kanboard/blob/master/ChangeLog)
-- [Documentation](https://github.com/fguillot/kanboard/blob/master/doc/index.markdown)
+- Translated into many languages
+- Distributed under [MIT License](https://github.com/kanboard/kanboard/blob/master/LICENSE)
+- [List of features](https://kanboard.org/#features)
+- [Change Log](https://github.com/kanboard/kanboard/blob/master/ChangeLog)
+- [Documentation](https://github.com/kanboard/kanboard/blob/master/doc/en_US/index.markdown)
+- IRC channel: [#kanboard](ircs://chat.freenode.net:6697/#kanboard) (Freenode)
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/fguillot/kanboard)
-
-Authors
+Credits
 -------
 
-- Main developer: [Frédéric Guillot](https://github.com/fguillot)
-- [List of contributors](https://github.com/fguillot/kanboard/blob/master/CONTRIBUTORS.md)
+- Main developer: Frédéric Guillot
+- [Contributors](https://github.com/kanboard/kanboard/graphs/contributors)
 
 Installation and Upgrade
 ------------------------
 
-- [Requirements](https://kanboard.net/documentation/requirements)
-- [Installation instructions](https://kanboard.net/documentation/installation)
-- [Upgrade to a new version](https://kanboard.net/documentation/update)
+- [Requirements](https://github.com/kanboard/kanboard/blob/master/doc/en_US/requirements.markdown)
+- [Installation instructions](https://github.com/kanboard/kanboard/blob/master/doc/en_US/installation.markdown)
+- [Upgrade to a new version](https://github.com/kanboard/kanboard/blob/master/doc/en_US/update.markdown)
+- [Use Kanboard with Docker](https://github.com/kanboard/kanboard/blob/master/doc/en_US/docker.markdown)

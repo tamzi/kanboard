@@ -6,7 +6,9 @@ use DateTime;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use Eluceo\iCal\Property\Event\Attendees;
+use Eluceo\iCal\Property\Event\Organizer;
 use Kanboard\Core\Filter\FormatterInterface;
+use PicoDb\Table;
 
 /**
  * iCal event formatter for tasks
@@ -14,15 +16,15 @@ use Kanboard\Core\Filter\FormatterInterface;
  * @package  formatter
  * @author   Frederic Guillot
  */
-class TaskICalFormatter extends BaseTaskCalendarFormatter implements FormatterInterface
+class TaskICalFormatter extends BaseFormatter implements FormatterInterface
 {
     /**
      * Calendar object
      *
-     * @access private
+     * @access protected
      * @var \Eluceo\iCal\Component\Calendar
      */
-    private $vCalendar;
+    protected $vCalendar;
 
     /**
      * Get Ical events
@@ -40,7 +42,7 @@ class TaskICalFormatter extends BaseTaskCalendarFormatter implements FormatterIn
      *
      * @access public
      * @param \Eluceo\iCal\Component\Calendar $vCalendar
-     * @return FormatterInterface
+     * @return $this
      */
     public function setCalendar(Calendar $vCalendar)
     {
@@ -52,18 +54,21 @@ class TaskICalFormatter extends BaseTaskCalendarFormatter implements FormatterIn
      * Transform results to iCal events
      *
      * @access public
-     * @return FormatterInterface
+     * @param  Table  $query
+     * @param  string $startColumn
+     * @param  string $endColumn
+     * @return $this
      */
-    public function addDateTimeEvents()
+    public function addTasksWithStartAndDueDate(Table $query, $startColumn, $endColumn)
     {
-        foreach ($this->query->findAll() as $task) {
+        foreach ($query->findAll() as $task) {
             $start = new DateTime;
-            $start->setTimestamp($task[$this->startColumn]);
+            $start->setTimestamp($task[$startColumn]);
 
             $end = new DateTime;
-            $end->setTimestamp($task[$this->endColumn] ?: time());
+            $end->setTimestamp($task[$endColumn] ?: time());
 
-            $vEvent = $this->getTaskIcalEvent($task, 'task-#'.$task['id'].'-'.$this->startColumn.'-'.$this->endColumn);
+            $vEvent = $this->getTaskIcalEvent($task, 'task-#'.$task['id'].'-'.$startColumn.'-'.$endColumn);
             $vEvent->setDtStart($start);
             $vEvent->setDtEnd($end);
 
@@ -77,18 +82,22 @@ class TaskICalFormatter extends BaseTaskCalendarFormatter implements FormatterIn
      * Transform results to all day iCal events
      *
      * @access public
-     * @return FormatterInterface
+     * @param  Table $query
+     * @return $this
      */
-    public function addFullDayEvents()
+    public function addTasksWithDueDateOnly(Table $query)
     {
-        foreach ($this->query->findAll() as $task) {
+        foreach ($query->findAll() as $task) {
             $date = new DateTime;
-            $date->setTimestamp($task[$this->startColumn]);
+            $date->setTimestamp($task['date_due']);
 
-            $vEvent = $this->getTaskIcalEvent($task, 'task-#'.$task['id'].'-'.$this->startColumn);
+            $vEvent = $this->getTaskIcalEvent($task, 'task-#'.$task['id'].'-date_due');
             $vEvent->setDtStart($date);
             $vEvent->setDtEnd($date);
-            $vEvent->setNoTime(true);
+
+            if ($date->format('Hi') === '0000') {
+                $vEvent->setNoTime(true);
+            }
 
             $this->vCalendar->addComponent($vEvent);
         }
@@ -117,16 +126,24 @@ class TaskICalFormatter extends BaseTaskCalendarFormatter implements FormatterIn
         $vEvent->setModified($dateModif);
         $vEvent->setUseTimezone(true);
         $vEvent->setSummary(t('#%d', $task['id']).' '.$task['title']);
-        $vEvent->setUrl($this->helper->url->base().$this->helper->url->to('task', 'show', array('task_id' => $task['id'], 'project_id' => $task['project_id'])));
+        $vEvent->setDescription($task['description']);
+        $vEvent->setDescriptionHTML($this->helper->text->markdown($task['description']));
+        $vEvent->setUrl($this->helper->url->base().$this->helper->url->to('TaskViewController', 'show', array('task_id' => $task['id'], 'project_id' => $task['project_id'])));
 
         if (! empty($task['owner_id'])) {
-            $vEvent->setOrganizer($task['assignee_name'] ?: $task['assignee_username'], $task['assignee_email']);
+            $attendees = new Attendees;
+            $attendees->add(
+                'MAILTO:'.($task['assignee_email'] ?: $task['assignee_username'].'@kanboard.local'),
+                array('CN' => $task['assignee_name'] ?: $task['assignee_username'])
+            );
+            $vEvent->setAttendees($attendees);
         }
 
         if (! empty($task['creator_id'])) {
-            $attendees = new Attendees;
-            $attendees->add('MAILTO:'.($task['creator_email'] ?: $task['creator_username'].'@kanboard.local'));
-            $vEvent->setAttendees($attendees);
+            $vEvent->setOrganizer(new Organizer(
+                'MAILTO:' . $task['creator_email'] ?: $task['creator_username'].'@kanboard.local',
+                array('CN' => $task['creator_name'] ?: $task['creator_username'])
+            ));
         }
 
         return $vEvent;

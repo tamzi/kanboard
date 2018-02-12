@@ -5,7 +5,7 @@ namespace Kanboard\Action;
 /**
  * Create automatically a task from a webhook
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Frederic Guillot
  */
 class TaskCreation extends Base
@@ -52,6 +52,7 @@ class TaskCreation extends Base
     public function getEventRequiredParameters()
     {
         return array(
+            'project_id',
             'reference',
             'title',
         );
@@ -66,7 +67,7 @@ class TaskCreation extends Base
      */
     public function doAction(array $data)
     {
-        return (bool) $this->taskCreation->create(array(
+        return (bool) $this->taskCreationModel->create(array(
             'project_id' => $data['project_id'],
             'title' => $data['title'],
             'reference' => $data['reference'],

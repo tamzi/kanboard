@@ -2,12 +2,12 @@
 
 namespace Kanboard\Action;
 
-use Kanboard\Model\Task;
+use Kanboard\Model\TaskModel;
 
 /**
  * Close automatically a task in a specific column
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Frederic Guillot
  */
 class TaskCloseColumn extends Base
@@ -32,7 +32,7 @@ class TaskCloseColumn extends Base
     public function getCompatibleEvents()
     {
         return array(
-            Task::EVENT_MOVE_COLUMN,
+            TaskModel::EVENT_MOVE_COLUMN,
         );
     }
 
@@ -55,7 +55,13 @@ class TaskCloseColumn extends Base
      */
     public function getEventRequiredParameters()
     {
-        return array('task_id', 'column_id');
+        return array(
+            'task_id',
+            'task' => array(
+                'project_id',
+                'column_id',
+            )
+        );
     }
 
     /**
@@ -67,7 +73,7 @@ class TaskCloseColumn extends Base
      */
     public function doAction(array $data)
     {
-        return $this->taskStatus->close($data['task_id']);
+        return $this->taskStatusModel->close($data['task_id']);
     }
 
     /**
@@ -79,6 +85,6 @@ class TaskCloseColumn extends Base
      */
     public function hasRequiredCondition(array $data)
     {
-        return $data['column_id'] == $this->getParam('column_id');
+        return $data['task']['column_id'] == $this->getParam('column_id');
     }
 }

@@ -19,20 +19,18 @@ class ResetTwoFactorCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $username = $input->getArgument('username');
-        $userId = $this->user->getIdByUsername($username);
+        $userId = $this->userModel->getIdByUsername($username);
 
         if (empty($userId)) {
             $output->writeln('<error>User not found</error>');
-            return false;
+            return 1;
         }
 
-        if (!$this->user->update(array('id' => $userId, 'twofactor_activated' => 0, 'twofactor_secret' => ''))) {
+        if (!$this->userModel->update(array('id' => $userId, 'twofactor_activated' => 0, 'twofactor_secret' => ''))) {
             $output->writeln('<error>Unable to update user profile</error>');
-            return false;
+            return 1;
         }
 
         $output->writeln('<info>Two-factor authentication disabled</info>');
-
-        return true;
     }
 }

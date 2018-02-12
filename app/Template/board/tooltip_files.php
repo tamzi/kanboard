@@ -1,5 +1,5 @@
 <div class="tooltip-large">
-    <table>
+    <table class="table-small">
         <?php foreach ($files as $file): ?>
         <tr>
             <th>
@@ -9,9 +9,9 @@
         </tr>
         <tr>
             <td>
-                <i class="fa fa-download fa-fw"></i><?= $this->url->link(t('download'), 'FileViewer', 'download', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id'])) ?>
+                <?= $this->url->icon('download', t('download'), 'FileViewerController', 'download', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id'])) ?>
                 <?php if ($file['is_image'] == 1): ?>
-                    &nbsp;<i class="fa fa-eye"></i> <?= $this->url->link(t('open file'), 'FileViewer', 'show', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id']), false, 'popover') ?>
+                    &nbsp;<?= $this->modal->large('eye', t('open file'), 'FileViewerController', 'show', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id'])) ?>
                 <?php endif ?>
             </td>
         </tr>

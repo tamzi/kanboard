@@ -13,14 +13,25 @@ use Kanboard\Core\Base;
 class UserHelper extends Base
 {
     /**
-     * Return true if the logged user as unread notifications
+     * Return subtask list toggle value
+     *
+     * @access public
+     * @return boolean
+     */
+    public function hasSubtaskListActivated()
+    {
+        return $this->userSession->hasSubtaskListActivated();
+    }
+
+    /**
+     * Return true if the logged user has unread notifications
      *
      * @access public
      * @return boolean
      */
     public function hasNotifications()
     {
-        return $this->userUnreadNotification->hasNotifications($this->userSession->getId());
+        return $this->userUnreadNotificationModel->hasNotifications($this->userSession->getId());
     }
 
     /**
@@ -35,10 +46,22 @@ class UserHelper extends Base
         $initials = '';
 
         foreach (explode(' ', $name, 2) as $string) {
-            $initials .= mb_substr($string, 0, 1);
+            $initials .= mb_substr($string, 0, 1, 'UTF-8');
         }
 
-        return mb_strtoupper($initials);
+        return mb_strtoupper($initials, 'UTF-8');
+    }
+
+    /**
+     * Return the user full name
+     *
+     * @param  array    $user   User properties
+     * @return string
+     */
+    public function getFullname(array $user = array())
+    {
+        $user = empty($user) ? $this->userSession->getAll() : $user;
+        return $user['name'] ?: $user['username'];
     }
 
     /**
@@ -95,6 +118,10 @@ class UserHelper extends Base
      */
     public function hasAccess($controller, $action)
     {
+        if (! $this->userSession->isLogged()) {
+            return false;
+        }
+
         $key = 'app_access:'.$controller.$action;
         $result = $this->memoryCache->get($key);
 
@@ -116,46 +143,14 @@ class UserHelper extends Base
      */
     public function hasProjectAccess($controller, $action, $project_id)
     {
-        if ($this->userSession->isAdmin()) {
-            return true;
-        }
-
-        if (! $this->hasAccess($controller, $action)) {
-            return false;
-        }
-
         $key = 'project_access:'.$controller.$action.$project_id;
         $result = $this->memoryCache->get($key);
 
         if ($result === null) {
-            $role = $this->getProjectUserRole($project_id);
-            $result = $this->projectAuthorization->isAllowed($controller, $action, $role);
+            $result = $this->helper->projectRole->checkProjectAccess($controller, $action, $project_id);
             $this->memoryCache->set($key, $result);
         }
 
         return $result;
-    }
-
-    /**
-     * Get project role for the current user
-     *
-     * @access public
-     * @param  integer $project_id
-     * @return string
-     */
-    public function getProjectUserRole($project_id)
-    {
-        return $this->memoryCache->proxy($this->projectUserRole, 'getUserRole', $project_id, $this->userSession->getId());
-    }
-
-    /**
-     * Return the user full name
-     *
-     * @param  array    $user   User properties
-     * @return string
-     */
-    public function getFullname(array $user = array())
-    {
-        return $this->user->getFullname(empty($user) ? $this->userSession->getAll() : $user);
     }
 }

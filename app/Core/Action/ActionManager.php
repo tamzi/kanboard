@@ -2,6 +2,7 @@
 
 namespace Kanboard\Core\Action;
 
+use Exception;
 use RuntimeException;
 use Kanboard\Core\Base;
 use Kanboard\Action\Base as ActionBase;
@@ -84,8 +85,12 @@ class ActionManager extends Base
         $params = array();
 
         foreach ($actions as $action) {
-            $currentAction = $this->getAction($action['action_name']);
-            $params[$currentAction->getName()] = $currentAction->getActionRequiredParameters();
+            try {
+                $currentAction = $this->getAction($action['action_name']);
+                $params[$currentAction->getName()] = $currentAction->getActionRequiredParameters();
+            } catch (Exception $e) {
+                $this->logger->error(__METHOD__.': '.$e->getMessage());
+            }
         }
 
         return $params;
@@ -121,22 +126,42 @@ class ActionManager extends Base
     public function attachEvents()
     {
         if ($this->userSession->isLogged()) {
-            $actions = $this->action->getAllByUser($this->userSession->getId());
+            $actions = $this->actionModel->getAllByUser($this->userSession->getId());
         } else {
-            $actions = $this->action->getAll();
+            $actions = $this->actionModel->getAll();
         }
 
         foreach ($actions as $action) {
-            $listener = clone $this->getAction($action['action_name']);
-            $listener->setProjectId($action['project_id']);
+            try {
+                $listener = clone $this->getAction($action['action_name']);
+                $listener->setProjectId($action['project_id']);
 
-            foreach ($action['params'] as $param_name => $param_value) {
-                $listener->setParam($param_name, $param_value);
+                foreach ($action['params'] as $param_name => $param_value) {
+                    $listener->setParam($param_name, $param_value);
+                }
+
+                $this->dispatcher->addListener($action['event_name'], array($listener, 'execute'));
+            } catch (Exception $e) {
+                $this->logger->error(__METHOD__.': '.$e->getMessage());
             }
-
-            $this->dispatcher->addListener($action['event_name'], array($listener, 'execute'));
         }
 
         return $this;
+    }
+
+    /**
+     * Remove all listeners for automated actions
+     *
+     * @access public
+     */
+    public function removeEvents()
+    {
+        foreach ($this->dispatcher->getListeners() as $eventName => $listeners) {
+            foreach ($listeners as $listener) {
+                if (is_array($listener) && $listener[0] instanceof ActionBase) {
+                    $this->dispatcher->removeListener($eventName, $listener);
+                }
+            }
+        }
     }
 }

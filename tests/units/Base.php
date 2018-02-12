@@ -3,22 +3,27 @@
 require __DIR__.'/../../vendor/autoload.php';
 require __DIR__.'/../../app/constants.php';
 
+use Composer\Autoload\ClassLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher;
 use Symfony\Component\Stopwatch\Stopwatch;
 use SimpleLogger\Logger;
-use SimpleLogger\File;
 use Kanboard\Core\Session\FlashMessage;
-use Kanboard\Core\Session\SessionStorage;
 use Kanboard\ServiceProvider\ActionProvider;
 
 abstract class Base extends PHPUnit_Framework_TestCase
 {
     protected $container;
 
+    /**
+     * @var EventDispatcher
+     */
+    protected $dispatcher;
+
     public function setUp()
     {
         date_default_timezone_set('UTC');
+        $_SESSION = array();
 
         if (DB_DRIVER === 'mysql') {
             $pdo = new PDO('mysql:host='.DB_HOSTNAME, DB_USERNAME, DB_PASSWORD);
@@ -33,29 +38,34 @@ abstract class Base extends PHPUnit_Framework_TestCase
         }
 
         $this->container = new Pimple\Container;
-        $this->container->register(new Kanboard\ServiceProvider\HelperProvider);
-        $this->container->register(new Kanboard\ServiceProvider\AuthenticationProvider);
-        $this->container->register(new Kanboard\ServiceProvider\DatabaseProvider);
-        $this->container->register(new Kanboard\ServiceProvider\ClassProvider);
-        $this->container->register(new Kanboard\ServiceProvider\NotificationProvider);
-        $this->container->register(new Kanboard\ServiceProvider\RouteProvider);
-        $this->container->register(new Kanboard\ServiceProvider\AvatarProvider);
-        $this->container->register(new Kanboard\ServiceProvider\FilterProvider);
+        $this->container->register(new Kanboard\ServiceProvider\CacheProvider());
+        $this->container->register(new Kanboard\ServiceProvider\HelperProvider());
+        $this->container->register(new Kanboard\ServiceProvider\AuthenticationProvider());
+        $this->container->register(new Kanboard\ServiceProvider\DatabaseProvider());
+        $this->container->register(new Kanboard\ServiceProvider\ClassProvider());
+        $this->container->register(new Kanboard\ServiceProvider\NotificationProvider());
+        $this->container->register(new Kanboard\ServiceProvider\RouteProvider());
+        $this->container->register(new Kanboard\ServiceProvider\AvatarProvider());
+        $this->container->register(new Kanboard\ServiceProvider\FilterProvider());
+        $this->container->register(new Kanboard\ServiceProvider\FormatterProvider());
+        $this->container->register(new Kanboard\ServiceProvider\JobProvider());
+        $this->container->register(new Kanboard\ServiceProvider\QueueProvider());
+        $this->container->register(new Kanboard\ServiceProvider\ExternalTaskProvider());
 
         $this->container['dispatcher'] = new TraceableEventDispatcher(
             new EventDispatcher,
             new Stopwatch
         );
 
-        $this->container['db']->logQueries = true;
+        $this->dispatcher = $this->container['dispatcher'];
 
-        $this->container['logger'] = new Logger;
-        $this->container['logger']->setLogger(new File($this->isWindows() ? 'NUL' : '/dev/null'));
+        $this->container['db']->getStatementHandler()->withLogging();
+        $this->container['logger'] = new Logger();
 
         $this->container['httpClient'] = $this
             ->getMockBuilder('\Kanboard\Core\Http\Client')
             ->setConstructorArgs(array($this->container))
-            ->setMethods(array('get', 'getJson', 'postJson', 'postForm'))
+            ->setMethods(array('get', 'getJson', 'postJson', 'postJsonAsync', 'postForm', 'postFormAsync'))
             ->getMock();
 
         $this->container['emailClient'] = $this
@@ -64,8 +74,8 @@ abstract class Base extends PHPUnit_Framework_TestCase
             ->setMethods(array('send'))
             ->getMock();
 
-        $this->container['userNotificationType'] = $this
-            ->getMockBuilder('\Kanboard\Model\UserNotificationType')
+        $this->container['userNotificationTypeModel'] = $this
+            ->getMockBuilder('\Kanboard\Model\UserNotificationTypeModel')
             ->setConstructorArgs(array($this->container))
             ->setMethods(array('getType', 'getSelectedTypes'))
             ->getMock();
@@ -76,21 +86,20 @@ abstract class Base extends PHPUnit_Framework_TestCase
             ->setMethods(array('put', 'moveFile', 'remove', 'moveUploadedFile'))
             ->getMock();
 
-        $this->container['sessionStorage'] = new SessionStorage;
         $this->container->register(new ActionProvider);
 
         $this->container['flash'] = function ($c) {
             return new FlashMessage($c);
         };
+
+        $loader = new ClassLoader();
+        $loader->addPsr4('Kanboard\Plugin\\', PLUGINS_DIR);
+        $loader->register();
     }
 
     public function tearDown()
     {
         $this->container['db']->closeConnection();
-    }
-
-    public function isWindows()
-    {
-        return substr(PHP_OS, 0, 3) === 'WIN';
+        unset ($this->container);
     }
 }

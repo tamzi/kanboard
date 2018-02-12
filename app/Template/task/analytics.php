@@ -1,20 +1,29 @@
-<div class="task-show-title color-<?= $task['color_id'] ?>">
-    <h2><?= $this->text->e($task['title']) ?></h2>
-</div>
+<?= $this->render('task/details', array(
+    'task' => $task,
+    'tags' => $tags,
+    'project' => $project,
+    'editable' => false,
+)) ?>
+
 <div class="page-header">
     <h2><?= t('Analytics') ?></h2>
 </div>
 
-<div class="listing">
+<div class="panel">
     <ul>
         <li><?= t('Lead time: ').'<strong>'.$this->dt->duration($lead_time) ?></strong></li>
         <li><?= t('Cycle time: ').'<strong>'.$this->dt->duration($cycle_time) ?></strong></li>
     </ul>
 </div>
 
-<h3 id="analytic-task-time-column"><?= t('Time spent into each column') ?></h3>
-<div id="chart" data-metrics='<?= json_encode($time_spent_columns, JSON_HEX_APOS) ?>' data-label="<?= t('Time spent') ?>"></div>
-<table class="table-stripped">
+<h3><?= t('Time spent into each column') ?></h3>
+
+<?= $this->app->component('chart-task-time-column', array(
+    'metrics' => $time_spent_columns,
+    'label' => t('Time spent'),
+)) ?>
+
+<table class="table-striped">
     <tr>
         <th><?= t('Column') ?></th>
         <th><?= t('Time spent') ?></th>
@@ -34,6 +43,3 @@
         <li><?= t('If the task is not closed the current time is used instead of the completion date.') ?></li>
     </ul>
 </div>
-
-<?= $this->asset->js('assets/js/vendor/d3.v3.min.js') ?>
-<?= $this->asset->js('assets/js/vendor/c3.min.js') ?>

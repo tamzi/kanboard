@@ -86,18 +86,23 @@ class Markdown extends Parsedown
      */
     protected function inlineUserLink(array $Excerpt)
     {
-        if (! $this->isPublicLink && preg_match('/^@([^\s]+)/', $Excerpt['text'], $matches)) {
-            $user_id = $this->container['user']->getIdByUsername($matches[1]);
+        if (! $this->isPublicLink && preg_match('/^@([^\s,!:?]+)/', $Excerpt['text'], $matches)) {
+            $username = rtrim($matches[1], '.');
+            $user = $this->container['userCacheDecorator']->getByUsername($username);
 
-            if (! empty($user_id)) {
-                $url = $this->container['helper']->url->href('user', 'profile', array('user_id' => $user_id));
+            if (! empty($user)) {
+                $url = $this->container['helper']->url->href('UserViewController', 'profile', array('user_id' => $user['id']));
 
                 return array(
-                    'extent' => strlen($matches[0]),
+                    'extent'  => strlen($username) + 1,
                     'element' => array(
-                        'name' => 'a',
-                        'text' => $matches[0],
-                        'attributes' => array('href' => $url, 'class' => 'user-mention-link'),
+                        'name'       => 'a',
+                        'text'       => '@' . $username,
+                        'attributes' => array(
+                            'href'  => $url,
+                            'class' => 'user-mention-link',
+                            'title' => $user['name'] ?: $user['username'],
+                        ),
                     ),
                 );
             }
@@ -116,16 +121,19 @@ class Markdown extends Parsedown
     private function buildTaskLink($task_id)
     {
         if ($this->isPublicLink) {
-            $token = $this->container['memoryCache']->proxy($this->container['taskFinder'], 'getProjectToken', $task_id);
+            $token = $this->container['memoryCache']->proxy($this->container['taskFinderModel'], 'getProjectToken', $task_id);
 
             if (! empty($token)) {
                 return $this->container['helper']->url->href(
-                    'task',
+                    'TaskViewController',
                     'readonly',
                     array(
                         'token' => $token,
                         'task_id' => $task_id,
-                    )
+                    ),
+                    false,
+                    '',
+                    true
                 );
             }
 
@@ -133,7 +141,7 @@ class Markdown extends Parsedown
         }
 
         return $this->container['helper']->url->href(
-            'task',
+            'TaskViewController',
             'show',
             array('task_id' => $task_id)
         );

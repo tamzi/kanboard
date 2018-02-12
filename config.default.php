@@ -4,20 +4,41 @@
 /* Rename this file to config.php if you want to change the values */
 /*******************************************************************/
 
+// Data folder (must be writeable by the web server user and absolute)
+define('DATA_DIR', __DIR__.DIRECTORY_SEPARATOR.'data');
+
 // Enable/Disable debug
 define('DEBUG', false);
 
-// Debug file path
-define('DEBUG_FILE', __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'debug.log');
+// Available log drivers: syslog, stderr, stdout or file
+define('LOG_DRIVER', '');
+
+// Log filename if the log driver is "file"
+define('LOG_FILE', DATA_DIR.DIRECTORY_SEPARATOR.'debug.log');
 
 // Plugins directory
 define('PLUGINS_DIR', 'plugins');
 
-// Folder for uploaded files
-define('FILES_DIR', 'data'.DIRECTORY_SEPARATOR.'files');
+// Plugins directory URL
+define('PLUGIN_API_URL', 'https://kanboard.org/plugins.json');
 
-// E-mail address for the "From" header (notifications)
-define('MAIL_FROM', 'notifications@kanboard.local');
+// Enable/Disable plugin installer
+define('PLUGIN_INSTALLER', true);
+
+// Available cache drivers are "file" and "memory"
+define('CACHE_DRIVER', 'memory');
+
+// Cache folder to use if cache driver is "file" (must be writeable by the web server user)
+define('CACHE_DIR', DATA_DIR.DIRECTORY_SEPARATOR.'cache');
+
+// Folder for uploaded files (must be writeable by the web server user)
+define('FILES_DIR', DATA_DIR.DIRECTORY_SEPARATOR.'files');
+
+// Enable/disable email configuration from the user interface
+define('MAIL_CONFIGURATION', true);
+
+// E-mail address used for the "From" header (notifications)
+define('MAIL_FROM', 'replace-me@kanboard.local');
 
 // Mail transport available: "smtp", "sendmail", "mail" (PHP mail function), "postmark", "mailgun", "sendgrid"
 define('MAIL_TRANSPORT', 'mail');
@@ -31,6 +52,11 @@ define('MAIL_SMTP_ENCRYPTION', null); // Valid values are "null", "ssl" or "tls"
 
 // Sendmail command to use when the transport is "sendmail"
 define('MAIL_SENDMAIL_COMMAND', '/usr/sbin/sendmail -bs');
+
+// Run automatically database migrations
+// If set to false, you will have to run manually the SQL migrations from the CLI during the next Kanboard upgrade
+// Do not run the migrations from multiple processes at the same time (example: web page + background worker)
+define('DB_RUN_MIGRATIONS', true);
 
 // Database driver: sqlite, mysql or postgres (sqlite by default)
 define('DB_DRIVER', 'sqlite');
@@ -49,6 +75,18 @@ define('DB_NAME', 'kanboard');
 
 // Mysql/Postgres custom port (null = default port)
 define('DB_PORT', null);
+
+// Mysql SSL key
+define('DB_SSL_KEY', null);
+
+// Mysql SSL certificate
+define('DB_SSL_CERT', null);
+
+// Mysql SSL CA
+define('DB_SSL_CA', null);
+
+// Mysql SSL server verification, set to false if you don't want the Mysql driver to validate the certificate CN
+define('DB_VERIFY_SERVER_CERT', null);
 
 // Enable LDAP authentication (false by default)
 define('LDAP_AUTH', false);
@@ -105,6 +143,13 @@ define('LDAP_USER_ATTRIBUTE_EMAIL', 'mail');
 // LDAP attribute to find groups in user profile
 define('LDAP_USER_ATTRIBUTE_GROUPS', 'memberof');
 
+// LDAP attribute for user avatar image: thumbnailPhoto or jpegPhoto
+define('LDAP_USER_ATTRIBUTE_PHOTO', '');
+
+// LDAP attribute for user language, example: 'preferredlanguage'
+// Put an empty string to disable language sync
+define('LDAP_USER_ATTRIBUTE_LANGUAGE', '');
+
 // Allow automatic LDAP user creation
 define('LDAP_USER_CREATION', true);
 
@@ -156,9 +201,6 @@ define('ENABLE_HSTS', true);
 // Enable or disable "X-Frame-Options: DENY" HTTP header
 define('ENABLE_XFRAME', true);
 
-// Enable syslog logging
-define('ENABLE_SYSLOG', true);
-
 // Escape html inside markdown text
 define('MARKDOWN_ESCAPE_HTML', true);
 
@@ -171,7 +213,7 @@ define('ENABLE_URL_REWRITE', false);
 // Hide login form, useful if all your users use Google/Github/ReverseProxy authentication
 define('HIDE_LOGIN_FORM', false);
 
-// Disabling logout (for external SSO authentication)
+// Disabling logout (useful for external SSO authentication)
 define('DISABLE_LOGOUT', false);
 
 // Enable captcha after 3 authentication failure
@@ -192,3 +234,12 @@ define('HTTP_PROXY_HOSTNAME', '');
 define('HTTP_PROXY_PORT', '3128');
 define('HTTP_PROXY_USERNAME', '');
 define('HTTP_PROXY_PASSWORD', '');
+
+// Set to false to allow self-signed certificates
+define('HTTP_VERIFY_SSL_CERTIFICATE', true);
+
+// TOTP (2FA) issuer name
+define('TOTP_ISSUER', 'Kanboard');
+
+// Comma separated list of fields to not synchronize when using external authentication providers
+define('EXTERNAL_AUTH_EXCLUDE_FIELDS', 'username');

@@ -7,9 +7,9 @@
         <?= t('Do you really want to duplicate this task?') ?>
     </p>
 
-    <div class="form-actions">
-        <?= $this->url->link(t('Yes'), 'taskduplication', 'duplicate', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'confirmation' => 'yes'), true, 'btn btn-red') ?>
-        <?= t('or') ?>
-        <?= $this->url->link(t('cancel'), 'task', 'show', array('task_id' => $task['id'], 'project_id' => $task['project_id']), false, 'close-popover') ?>
-    </div>
+    <?= $this->modal->confirmButtons(
+        'TaskDuplicationController',
+        'duplicate',
+        array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'confirmation' => 'yes')
+    ) ?>
 </div>

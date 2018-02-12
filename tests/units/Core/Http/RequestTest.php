@@ -43,6 +43,9 @@ class RequestTest extends Base
 
         $request = new Request($this->container, array(), array(), array('myvar' => 'myvalue', 'csrf_token' => $this->container['token']->getCSRFToken()), array(), array());
         $this->assertEquals(array('myvar' => 'myvalue'), $request->getValues());
+
+        $request = new Request($this->container, array(), array(), array('myvar' => 'myvalue', '-----------------------------7e1c32510025c--' => '', 'csrf_token' => $this->container['token']->getCSRFToken()), array(), array());
+        $this->assertEquals(array('myvar' => 'myvalue'), $request->getValues());
     }
 
     public function testGetFileContent()
@@ -168,6 +171,9 @@ class RequestTest extends Base
     {
         $request = new Request($this->container, array(), array(), array(), array(), array());
         $this->assertEquals('Unknown', $request->getIpAddress());
+
+        $request = new Request($this->container, array('HTTP_X_REAL_IP' => '192.168.1.1,127.0.0.1'), array(), array(), array(), array());
+        $this->assertEquals('192.168.1.1', $request->getIpAddress());
 
         $request = new Request($this->container, array('HTTP_X_FORWARDED_FOR' => '192.168.0.1,127.0.0.1'), array(), array(), array(), array());
         $this->assertEquals('192.168.0.1', $request->getIpAddress());

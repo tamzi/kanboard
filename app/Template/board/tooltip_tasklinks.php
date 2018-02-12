@@ -1,5 +1,5 @@
 <div class="tooltip-large">
-    <table>
+    <table class="table-small">
     <?php foreach ($links as $label => $grouped_links): ?>
         <tr>
             <th colspan="4"><?= t($label) ?></th>
@@ -12,7 +12,7 @@
                 <td class="column-60">
                     <?= $this->url->link(
                         $this->text->e('#'.$link['task_id'].' '.$link['title']),
-                        'task', 'show', array('task_id' => $link['task_id'], 'project_id' => $link['project_id']),
+                        'TaskViewController', 'show', array('task_id' => $link['task_id'], 'project_id' => $link['project_id']),
                         false,
                         $link['is_active'] ? '' : 'task-link-closed'
                     ) ?>

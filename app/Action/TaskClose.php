@@ -5,7 +5,7 @@ namespace Kanboard\Action;
 /**
  * Close automatically a task
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Frederic Guillot
  */
 class TaskClose extends Base
@@ -63,7 +63,7 @@ class TaskClose extends Base
      */
     public function doAction(array $data)
     {
-        return $this->taskStatus->close($data['task_id']);
+        return $this->taskStatusModel->close($data['task_id']);
     }
 
     /**

@@ -5,7 +5,7 @@ namespace Kanboard\Action;
 /**
  * Set a category automatically according to a label
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Frederic Guillot
  */
 class TaskAssignCategoryLabel extends Base
@@ -74,7 +74,7 @@ class TaskAssignCategoryLabel extends Base
             'category_id' => $this->getParam('category_id'),
         );
 
-        return $this->taskModification->update($values);
+        return $this->taskModificationModel->update($values);
     }
 
     /**

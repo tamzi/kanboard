@@ -2,12 +2,12 @@
 
 namespace Kanboard\Action;
 
-use Kanboard\Model\Task;
+use Kanboard\Model\TaskModel;
 
 /**
  * Duplicate a task to another project
  *
- * @package action
+ * @package Kanboard\Action
  * @author  Frederic Guillot
  */
 class TaskDuplicateAnotherProject extends Base
@@ -32,8 +32,9 @@ class TaskDuplicateAnotherProject extends Base
     public function getCompatibleEvents()
     {
         return array(
-            Task::EVENT_MOVE_COLUMN,
-            Task::EVENT_CLOSE,
+            TaskModel::EVENT_MOVE_COLUMN,
+            TaskModel::EVENT_CLOSE,
+            TaskModel::EVENT_CREATE,
         );
     }
 
@@ -61,7 +62,10 @@ class TaskDuplicateAnotherProject extends Base
     {
         return array(
             'task_id',
-            'column_id',
+            'task' => array(
+                'project_id',
+                'column_id',
+            )
         );
     }
 
@@ -74,8 +78,13 @@ class TaskDuplicateAnotherProject extends Base
      */
     public function doAction(array $data)
     {
-        $destination_column_id = $this->column->getFirstColumnId($this->getParam('project_id'));
-        return (bool) $this->taskDuplication->duplicateToProject($data['task_id'], $this->getParam('project_id'), null, $destination_column_id);
+        $destination_column_id = $this->columnModel->getFirstColumnId($this->getParam('project_id'));
+        return (bool) $this->taskProjectDuplicationModel->duplicateToProject(
+            $data['task_id'],
+            $this->getParam('project_id'),
+            null,
+            $destination_column_id
+        );
     }
 
     /**
@@ -87,6 +96,6 @@ class TaskDuplicateAnotherProject extends Base
      */
     public function hasRequiredCondition(array $data)
     {
-        return $data['column_id'] == $this->getParam('column_id') && $data['project_id'] != $this->getParam('project_id');
+        return $data['task']['column_id'] == $this->getParam('column_id') && $data['task']['project_id'] != $this->getParam('project_id');
     }
 }

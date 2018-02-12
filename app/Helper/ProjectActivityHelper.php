@@ -6,8 +6,7 @@ use Kanboard\Core\Base;
 use Kanboard\Filter\ProjectActivityProjectIdFilter;
 use Kanboard\Filter\ProjectActivityProjectIdsFilter;
 use Kanboard\Filter\ProjectActivityTaskIdFilter;
-use Kanboard\Formatter\ProjectActivityEventFormatter;
-use Kanboard\Model\ProjectActivity;
+use Kanboard\Model\ProjectActivityModel;
 
 /**
  * Project Activity Helper
@@ -26,7 +25,7 @@ class ProjectActivityHelper extends Base
      */
     public function searchEvents($search)
     {
-        $projects = $this->projectUserRole->getProjectsByUser($this->userSession->getId());
+        $projects = $this->projectUserRoleModel->getActiveProjectsByUser($this->userSession->getId());
         $events = array();
 
         if ($search !== '') {
@@ -34,11 +33,11 @@ class ProjectActivityHelper extends Base
             $queryBuilder
                 ->withFilter(new ProjectActivityProjectIdsFilter(array_keys($projects)))
                 ->getQuery()
-                ->desc(ProjectActivity::TABLE.'.id')
+                ->desc(ProjectActivityModel::TABLE.'.id')
                 ->limit(500)
             ;
 
-            $events = $queryBuilder->format(new ProjectActivityEventFormatter($this->container));
+            $events = $queryBuilder->format($this->projectActivityEventFormatter);
         }
 
         return $events;
@@ -58,11 +57,11 @@ class ProjectActivityHelper extends Base
             ->withFilter(new ProjectActivityProjectIdFilter($project_id));
 
         $queryBuilder->getQuery()
-            ->desc(ProjectActivity::TABLE.'.id')
+            ->desc(ProjectActivityModel::TABLE.'.id')
             ->limit($limit)
         ;
 
-        return $queryBuilder->format(new ProjectActivityEventFormatter($this->container));
+        return $queryBuilder->format($this->projectActivityEventFormatter);
     }
 
     /**
@@ -79,11 +78,11 @@ class ProjectActivityHelper extends Base
             ->withFilter(new ProjectActivityProjectIdsFilter($project_ids));
 
         $queryBuilder->getQuery()
-            ->desc(ProjectActivity::TABLE.'.id')
+            ->desc(ProjectActivityModel::TABLE.'.id')
             ->limit($limit)
         ;
 
-        return $queryBuilder->format(new ProjectActivityEventFormatter($this->container));
+        return $queryBuilder->format($this->projectActivityEventFormatter);
     }
 
     /**
@@ -98,8 +97,8 @@ class ProjectActivityHelper extends Base
         $queryBuilder = $this->projectActivityQuery
             ->withFilter(new ProjectActivityTaskIdFilter($task_id));
 
-        $queryBuilder->getQuery()->desc(ProjectActivity::TABLE.'.id');
+        $queryBuilder->getQuery()->desc(ProjectActivityModel::TABLE.'.id');
 
-        return $queryBuilder->format(new ProjectActivityEventFormatter($this->container));
+        return $queryBuilder->format($this->projectActivityEventFormatter);
     }
 }

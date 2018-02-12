@@ -3,6 +3,8 @@
 namespace Kanboard\Core;
 
 use Pimple\Container;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * Tool class
@@ -13,27 +15,33 @@ use Pimple\Container;
 class Tool
 {
     /**
-     * Get the mailbox hash from an email address
+     * Remove recursively a directory
      *
      * @static
      * @access public
-     * @param  string  $email
-     * @return string
+     * @param  string $directory
+     * @param  bool   $removeDirectory
      */
-    public static function getMailboxHash($email)
+    public static function removeAllFiles($directory, $removeDirectory = true)
     {
-        if (! strpos($email, '@') || ! strpos($email, '+')) {
-            return '';
+        $it = new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS);
+        $files = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach ($files as $file) {
+            if ($file->isDir()) {
+                rmdir($file->getRealPath());
+            } else {
+                unlink($file->getRealPath());
+            }
         }
 
-        list($local_part, ) = explode('@', $email);
-        list(, $identifier) = explode('+', $local_part);
-
-        return $identifier;
+        if ($removeDirectory) {
+            rmdir($directory);
+        }
     }
 
     /**
-     * Build dependency injection container from an array
+     * Build dependency injection containers from an array
      *
      * @static
      * @access public
@@ -49,6 +57,29 @@ class Tool
                 $container[lcfirst($name)] = function ($c) use ($class) {
                     return new $class($c);
                 };
+            }
+        }
+
+        return $container;
+    }
+
+    /**
+     * Build dependency injection container from an array
+     *
+     * @static
+     * @access public
+     * @param  Container  $container
+     * @param  array      $namespaces
+     * @return Container
+     */
+    public static function buildFactories(Container $container, array $namespaces)
+    {
+        foreach ($namespaces as $namespace => $classes) {
+            foreach ($classes as $name) {
+                $class = '\\Kanboard\\'.$namespace.'\\'.$name;
+                $container[lcfirst($name)] = $container->factory(function ($c) use ($class) {
+                    return new $class($c);
+                });
             }
         }
 

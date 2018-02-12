@@ -1,5 +1,10 @@
 <section id="main" class="public-task">
-    <?= $this->render('task/details', array('task' => $task, 'project' => $project, 'editable' => false)) ?>
+    <?= $this->render('task/details', array(
+        'task' => $task,
+        'tags' => $tags,
+        'project' => $project,
+        'editable' => false,
+    )) ?>
 
     <?= $this->render('task/description', array(
         'task' => $task,
@@ -21,7 +26,7 @@
         'is_public' => true,
     )) ?>
 
-    <?= $this->render('comments/show', array(
+    <?= $this->render('task_comments/show', array(
         'task' => $task,
         'comments' => $comments,
         'project' => $project,

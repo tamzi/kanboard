@@ -3,24 +3,24 @@
 namespace Kanboard\Core\Cache;
 
 /**
- * Cache Interface
+ * Interface CacheInterface
  *
- * @package  cache
- * @author   Frederic Guillot
+ * @package Kanboard\Core\Cache
+ * @author  Frederic Guillot
  */
 interface CacheInterface
 {
     /**
-     * Save a new value in the cache
+     * Store an item in the cache
      *
      * @access public
      * @param  string  $key
-     * @param  string  $value
+     * @param  mixed   $value
      */
     public function set($key, $value);
 
     /**
-     * Fetch value from cache
+     * Retrieve an item from the cache by key
      *
      * @access public
      * @param  string  $key
@@ -29,14 +29,14 @@ interface CacheInterface
     public function get($key);
 
     /**
-     * Clear all cache
+     * Remove all items from the cache
      *
      * @access public
      */
     public function flush();
 
     /**
-     * Remove cached value
+     * Remove an item from the cache
      *
      * @access public
      * @param  string  $key

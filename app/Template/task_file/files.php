@@ -1,5 +1,5 @@
 <?php if (! empty($files)): ?>
-    <table class="table-stripped table-small">
+    <table class="table-striped table-scrolling">
         <tr>
             <th><?= t('Filename') ?></th>
             <th><?= t('Creator') ?></th>
@@ -15,18 +15,20 @@
                         <ul>
                             <?php if ($this->file->getPreviewType($file['name']) !== null): ?>
                                 <li>
+                                    <?= $this->modal->large('eye', t('View file'), 'FileViewerController', 'show', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id'])) ?>
+                                </li>
+                            <?php elseif ($this->file->getBrowserViewType($file['name']) !== null): ?>
+                                <li>
                                     <i class="fa fa-eye fa-fw"></i>
-                                    <?= $this->url->link(t('View file'), 'FileViewer', 'show', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id']), false, 'popover') ?>
+                                    <?= $this->url->link(t('View file'), 'FileViewerController', 'browser', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id']), false, '', '', true) ?>
                                 </li>
                             <?php endif ?>
                             <li>
-                                <i class="fa fa-download fa-fw"></i>
-                                <?= $this->url->link(t('Download'), 'FileViewer', 'download', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id'])) ?>
+                                <?= $this->url->icon('download', t('Download'), 'FileViewerController', 'download', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id'])) ?>
                             </li>
-                            <?php if ($this->user->hasProjectAccess('TaskFile', 'remove', $task['project_id'])): ?>
+                            <?php if ($this->user->hasProjectAccess('TaskFileController', 'remove', $task['project_id'])): ?>
                                 <li>
-                                    <i class="fa fa-trash fa-fw"></i>
-                                    <?= $this->url->link(t('Remove'), 'TaskFile', 'confirm', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id']), false, 'popover') ?>
+                                    <?= $this->modal->confirm('trash-o', t('Remove'), 'TaskFileController', 'confirm', array('task_id' => $task['id'], 'project_id' => $task['project_id'], 'file_id' => $file['id'])) ?>
                                 </li>
                             <?php endif ?>
                         </ul>

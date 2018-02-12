@@ -43,8 +43,7 @@ abstract class BaseFilter
      */
     public static function getInstance($value = null)
     {
-        $self = new static($value);
-        return $self;
+        return new static($value);
     }
 
     /**
@@ -52,7 +51,7 @@ abstract class BaseFilter
      *
      * @access public
      * @param  Table $query
-     * @return \Kanboard\Core\Filter\FilterInterface
+     * @return $this
      */
     public function withQuery(Table $query)
     {
@@ -65,7 +64,7 @@ abstract class BaseFilter
      *
      * @access public
      * @param  string $value
-     * @return \Kanboard\Core\Filter\FilterInterface
+     * @return $this
      */
     public function withValue($value)
     {

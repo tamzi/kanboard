@@ -8,10 +8,10 @@ use SimpleValidator\Validators;
 /**
  * Swimlane Validator
  *
- * @package  validator
+ * @package  Kanboard\Validator
  * @author   Frederic Guillot
  */
-class SwimlaneValidator extends Base
+class SwimlaneValidator extends BaseValidator
 {
     /**
      * Validate creation
@@ -47,28 +47,6 @@ class SwimlaneValidator extends Base
         $rules = array(
             new Validators\Required('id', t('The id is required')),
             new Validators\Required('name', t('The name is required')),
-        );
-
-        $v = new Validator($values, array_merge($rules, $this->commonValidationRules()));
-
-        return array(
-            $v->execute(),
-            $v->getErrors()
-        );
-    }
-
-    /**
-     * Validate default swimlane modification
-     *
-     * @access public
-     * @param  array   $values           Form values
-     * @return array   $valid, $errors   [0] = Success or not, [1] = List of errors
-     */
-    public function validateDefaultModification(array $values)
-    {
-        $rules = array(
-            new Validators\Required('id', t('The id is required')),
-            new Validators\Required('default_swimlane', t('The name is required')),
         );
 
         $v = new Validator($values, array_merge($rules, $this->commonValidationRules()));
