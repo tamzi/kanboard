@@ -5,11 +5,11 @@
     <ul>
         <li>
             <?= t('Official website:') ?>
-            <a href="https://kanboard.org/" target="_blank" rel="noreferer">https://kanboard.org/</a>
+            <a href="https://kanboard.org/" target="_blank" rel="noopener noreferrer">https://kanboard.org/</a>
         </li>
         <li>
             <?= t('Author:') ?>
-            <strong>Frédéric Guillot</strong> (<a href="https://github.com/kanboard/kanboard/blob/master/CONTRIBUTORS.md" target="_blank"><?= t('contributors') ?></a>)
+            <strong>Frédéric Guillot</strong> (<a href="https://github.com/kanboard/kanboard/graphs/contributors" target="_blank" rel="noopener noreferrer"><?= t('contributors') ?></a>)
         </li>
         <li>
             <?= t('License:') ?>
@@ -36,8 +36,12 @@
             <strong><?= PHP_SAPI ?></strong>
         </li>
         <li>
+            <?= t('HTTP Client:') ?>
+            <strong><?= Kanboard\Core\Http\Client::backend() ?></strong>
+        </li>
+        <li>
             <?= t('OS version:') ?>
-            <strong><?= php_uname('s').' '.php_uname('r') ?></strong>
+            <strong><?= @php_uname('s').' '.@php_uname('r') ?></strong>
         </li>
         <li>
             <?= t('Database driver:') ?>

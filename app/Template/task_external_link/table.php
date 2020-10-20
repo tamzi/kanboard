@@ -4,9 +4,9 @@
         <tr>
             <th class="column-15"><?= t('Type') ?></th>
             <th><?= t('Title') ?></th>
-            <th class="column-10"><?= t('Dependency') ?></th>
+            <th class="column-15"><?= t('Dependency') ?></th>
             <th class="column-15"><?= t('Creator') ?></th>
-            <th class="column-15"><?= t('Date') ?></th>
+            <th class="column-10"><?= t('Date') ?></th>
         </tr>
     </thead>
     <tbody>
@@ -29,7 +29,7 @@
                 <?= $this->text->e($link['type']) ?>
             </td>
             <td>
-                <a href="<?= $link['url'] ?>" title="<?= $this->text->e($link['url']) ?>" target="_blank"><?= $this->text->e($link['title']) ?></a>
+                <a href="<?= $link['url'] ?>" title="<?= $this->text->e($link['url']) ?>" target="_blank"><?= $this->text->e($link['title']) ?><span class="ui-helper-hidden-accessible"> (<?= $this->text->e($link['url']) ?>)</span></a>
             </td>
             <td>
                 <?= $this->text->e($link['dependency_label']) ?>

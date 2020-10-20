@@ -44,7 +44,7 @@ class ExternalTaskCreationController extends BaseController
 
             if (empty($values)) {
                 $values = $this->request->getValues();
-                $externalTask = $taskProvider->fetch($taskProvider->buildTaskUri($values));
+                $externalTask = $taskProvider->fetch($taskProvider->buildTaskUri($values), $project['id']);
 
                 $values = $externalTask->getFormValues() + array(
                     'external_uri' => $externalTask->getUri(),
@@ -56,7 +56,7 @@ class ExternalTaskCreationController extends BaseController
                     'owner_id' => $this->userSession->getId(),
                 );
             } else {
-                $externalTask = $taskProvider->fetch($values['external_uri']);
+                $externalTask = $taskProvider->fetch($values['external_uri'], $project['id']);
             }
 
             $this->response->html($this->template->render('external_task_creation/step2', array(
@@ -67,7 +67,7 @@ class ExternalTaskCreationController extends BaseController
                 'errors' => $errors,
                 'template' => $taskProvider->getCreationFormTemplate(),
                 'columns_list' => $this->columnModel->getList($project['id']),
-                'users_list' => $this->projectUserRoleModel->getAssignableUsersList($project['id'], true, false, true),
+                'users_list' => $this->projectUserRoleModel->getAssignableUsersList($project['id'], true, false, $project['is_private'] == 1),
                 'categories_list' => $this->categoryModel->getList($project['id']),
                 'swimlanes_list' => $this->swimlaneModel->getList($project['id'], false, true),
             )));

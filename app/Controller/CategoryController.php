@@ -25,6 +25,7 @@ class CategoryController extends BaseController
         $this->response->html($this->helper->layout->project('category/index', array(
             'categories' => $this->categoryModel->getAll($project['id']),
             'project'    => $project,
+            'colors'  => $this->colorModel->getList(),
             'title'      => t('Categories'),
         )));
     }
@@ -41,6 +42,7 @@ class CategoryController extends BaseController
 
         $this->response->html($this->template->render('category/create', array(
             'values'  => $values + array('project_id' => $project['id']),
+            'colors'  => $this->colorModel->getList(),
             'errors'  => $errors,
             'project' => $project,
         )));
@@ -61,7 +63,7 @@ class CategoryController extends BaseController
 
         if ($valid) {
             if ($this->categoryModel->create($values) !== false) {
-                $this->flash->success(t('Your category have been created successfully.'));
+                $this->flash->success(t('Your category has been created successfully.'));
                 $this->response->redirect($this->helper->url->to('CategoryController', 'index', array('project_id' => $project['id'])), true);
                 return;
             } else {
@@ -87,6 +89,7 @@ class CategoryController extends BaseController
 
         $this->response->html($this->template->render('category/edit', array(
             'values'  => empty($values) ? $category : $values,
+            'colors'  => $this->colorModel->getList(),
             'errors'  => $errors,
             'project' => $project,
         )));

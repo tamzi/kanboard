@@ -14,6 +14,7 @@
 </div>
 <ul class="panel">
     <li><?= t('Role:') ?> <strong><?= $this->user->getRoleName($user['role']) ?></strong></li>
+    <li><?= t('Group membership(s):') ?> <strong><?= implode(', ', $this->user->getUsersGroupNames($user['id'])['full_list']) ?></strong></li>
     <li><?= t('Account type:') ?> <strong><?= $user['is_ldap_user'] ? t('Remote') : t('Local') ?></strong></li>
     <li><?= $user['twofactor_activated'] == 1 ? t('Two factor authentication enabled') :  t('Two factor authentication disabled') ?></li>
     <li><?= t('Number of failed login:') ?> <strong><?= $user['nb_failed_login'] ?></strong></li>
@@ -33,6 +34,7 @@
 <ul class="panel">
     <li><?= t('Timezone:') ?> <strong><?= $this->text->in($user['timezone'], $timezones) ?></strong></li>
     <li><?= t('Language:') ?> <strong><?= $this->text->in($user['language'], $languages) ?></strong></li>
+    <li><?= t('Custom Filter:') ?> <strong><?= $this->text->e($user['filter']) ?></strong></li>
     <li><?= t('Notifications:') ?> <strong><?= $user['notifications_enabled'] == 1 ? t('Enabled') : t('Disabled') ?></strong></li>
 </ul>
 

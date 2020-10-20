@@ -72,6 +72,22 @@ class FormHelper extends Base
     }
 
     /**
+     * Display a color select field
+     *
+     * @access public
+     * @param  string $name Field name
+     * @param  array $values Form values
+     * @return string
+     */
+    public function colorSelect($name, array $values)
+    {
+      $colors = $this->colorModel->getList();
+      $html = $this->label(t('Color'), $name);
+      $html .= $this->select($name, $colors, $values, array(), array('tabindex="4"'), 'color-picker');
+      return $html;
+    }
+
+    /**
      * Display a radio field group
      *
      * @access public
@@ -213,13 +229,15 @@ class FormHelper extends Base
     {
         $params = array(
             'name' => $name,
-            'text' => isset($values[$name]) ? $values[$name] : '',
             'css' => $this->errorClass($errors, $name),
             'required' => isset($attributes['required']) && $attributes['required'],
             'tabindex' => isset($attributes['tabindex']) ? $attributes['tabindex'] : '-1',
             'labelPreview' => t('Preview'),
+            'previewUrl' => $this->helper->url->to('TaskAjaxController', 'preview'),
             'labelWrite' => t('Write'),
+            'labelTitle' => t('Title'),
             'placeholder' => t('Write your text in Markdown'),
+            'ariaLabel' => isset($attributes['aria-label']) ? $attributes['aria-label'] : '',
             'autofocus' => isset($attributes['autofocus']) && $attributes['autofocus'],
             'suggestOptions' => array(
                 'triggers' => array(
@@ -232,7 +250,9 @@ class FormHelper extends Base
             $params['suggestOptions']['triggers']['@'] = $this->helper->url->to('UserAjaxController', 'mention', array('project_id' => $values['project_id'], 'search' => 'SEARCH_TERM'));
         }
 
-        $html = '<div class="js-text-editor" data-params=\''.json_encode($params, JSON_HEX_APOS).'\'></div>';
+        $html = '<div class="js-text-editor" data-params=\''.json_encode($params, JSON_HEX_APOS).'\'>';
+        $html .= '<script type="text/template">'.(isset($values[$name]) ? htmlspecialchars($values[$name], ENT_QUOTES, 'UTF-8', true) : '').'</script>';
+        $html .= '</div>';
         $html .= $this->errorList($errors, $name);
 
         return $html;

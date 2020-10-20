@@ -26,7 +26,7 @@
         <?php foreach ($columns as $column): ?>
         <tr data-column-id="<?= $column['id'] ?>">
             <td>
-                <i class="fa fa-arrows-alt draggable-row-handle" title="<?= t('Change column position') ?>"></i>&nbsp;
+                <i class="fa fa-arrows-alt draggable-row-handle" title="<?= t('Change column position') ?>" role="button" aria-label="<?= t('Change column position') ?>"></i>&nbsp;
                 <div class="dropdown">
                     <a href="#" class="dropdown-menu dropdown-menu-link-icon"><i class="fa fa-cog"></i><i class="fa fa-caret-down"></i></a>
                     <ul>
@@ -42,9 +42,7 @@
                 </div>
                 <?= $this->text->e($column['title']) ?>
                 <?php if (! empty($column['description'])): ?>
-                    <span class="tooltip" title="<?= $this->text->markdownAttribute($column['description']) ?>">
-                        <i class="fa fa-info-circle"></i>
-                    </span>
+                    <?= $this->app->tooltipMarkdown($column['description']) ?>
                 <?php endif ?>
             </td>
             <td>

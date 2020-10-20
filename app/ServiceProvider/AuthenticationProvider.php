@@ -2,13 +2,13 @@
 
 namespace Kanboard\ServiceProvider;
 
-use Kanboard\Auth\ApiAccessTokenAuth;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Kanboard\Core\Security\AuthenticationManager;
 use Kanboard\Core\Security\AccessMap;
 use Kanboard\Core\Security\Authorization;
 use Kanboard\Core\Security\Role;
+use Kanboard\Auth\ApiAccessTokenAuth;
 use Kanboard\Auth\RememberMeAuth;
 use Kanboard\Auth\DatabaseAuth;
 use Kanboard\Auth\LdapAuth;
@@ -41,11 +41,11 @@ class AuthenticationProvider implements ServiceProviderInterface
             $container['authenticationManager']->register(new ReverseProxyAuth($container));
         }
 
+        $container['authenticationManager']->register(new ApiAccessTokenAuth($container));
+        
         if (LDAP_AUTH) {
             $container['authenticationManager']->register(new LdapAuth($container));
-        }
-
-        $container['authenticationManager']->register(new ApiAccessTokenAuth($container));
+        }     
 
         $container['projectAccessMap'] = $this->getProjectAccessMap();
         $container['applicationAccessMap'] = $this->getApplicationAccessMap();
@@ -106,6 +106,8 @@ class AuthenticationProvider implements ServiceProviderInterface
         $acl->add('TaskSuppressionController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskCreationController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskBulkController', '*', Role::PROJECT_MEMBER);
+        $acl->add('TaskBulkMoveColumnController', '*', Role::PROJECT_MEMBER);
+        $acl->add('TaskBulkChangePropertyController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskDuplicationController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskRecurrenceController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskImportController', '*', Role::PROJECT_MANAGER);
@@ -142,6 +144,7 @@ class AuthenticationProvider implements ServiceProviderInterface
         $acl->add('FeedController', '*', Role::APP_PUBLIC);
         $acl->add('AvatarFileController', array('show', 'image'), Role::APP_PUBLIC);
         $acl->add('UserInviteController', array('signup', 'register'), Role::APP_PUBLIC);
+        $acl->add('CronjobController', array('run'), Role::APP_PUBLIC);
 
         $acl->add('ConfigController', '*', Role::APP_ADMIN);
         $acl->add('TagController', '*', Role::APP_ADMIN);

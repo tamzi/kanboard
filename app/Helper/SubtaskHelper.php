@@ -32,7 +32,7 @@ class SubtaskHelper extends Base
     public function renderTitle(array $subtask)
     {
         if ($subtask['status'] == 0) {
-            $html = '<i class="fa fa-square-o fa-fw"></i>';
+            $html = '<i class="fa fa-square-o fa-fw ' . ($this->hasSubtaskInProgress() ? 'js-modal-confirm' : '') . '"></i>';
         } elseif ($subtask['status'] == 1) {
             $html = '<i class="fa fa-gears fa-fw"></i>';
         } else {
@@ -105,10 +105,10 @@ class SubtaskHelper extends Base
 
     public function renderTitleField(array $values, array $errors = array(), array $attributes = array())
     {
-        $attributes = array_merge(array('tabindex="1"', 'required', 'maxlength="255"'), $attributes);
+        $attributes = array_merge(array('tabindex="1"', 'required'), $attributes);
 
         $html = $this->helper->form->label(t('Title'), 'title');
-        $html .= $this->helper->form->text('title', $values, $errors, $attributes);
+        $html .= $this->helper->form->text('title', $values, $errors, $attributes, 'form-max-width');
 
         return $html;
     }
@@ -121,7 +121,7 @@ class SubtaskHelper extends Base
         $html .= $this->helper->form->select('user_id', $users, $values, $errors, $attributes);
         $html .= '&nbsp;';
         $html .= '<small>';
-        $html .= '<a href="#" class="assign-me" data-target-id="form-user_id" data-current-id="'.$this->userSession->getId().'" title="'.t('Assign to me').'">'.t('Me').'</a>';
+        $html .= '<a href="#" class="assign-me" data-target-id="form-user_id" data-current-id="'.$this->userSession->getId().'" title="'.t('Assign to me').'" aria-label="'.t('Assign to me').'">'.t('Me').'</a>';
         $html .= '</small>';
 
         return $html;

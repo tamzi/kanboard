@@ -1,3 +1,398 @@
+Version 1.2.16 (October 9, 2020)
+--------------------------------
+
+* Update Composer dependencies
+* Update translations
+* Add link to toggle column scrolling in board view
+* Add missing environment variables in php-fpm config
+* Add setting that makes possible any new LDAP user to be Manager by default
+* Add ARIA label to modal link with title attribute
+* Add ARIA label to user mention
+* Add ARIA label to letter avatars
+* Add ARIA label to project select role without label
+* Add ARIA label to dropdown autocomplete without label 
+* Add ARIA label to form text editor without label
+* Add ARIA label to icons with title attributes
+* Add ARIA label for form inputs without labels
+* Add ARIA label for elements with titles
+* Add hidden accessible form input labels
+* Add hidden accessible titles
+* Hide user name from screen readers
+* Correct table collapsed column titles
+* Prevent the original page from being modified by the opened link
+* Allow email to be retrieve by SSO ReverseProxy
+* Fix grammatically incorrect error message
+* Add option to configure SMTP HELO name
+* Add new config parameter SESSION_HANDLER
+* Fix clearing of all Javascript storage
+* Added standard notification footer to comment email template
+
+Version 1.2.15 (June 19, 2020)
+------------------------------
+
+* Update dependencies
+* Added PUT method using CURLOPT_CUSTOMREQUEST
+* Run integration tests on Github Actions
+* Fixed capitalization of sAMAccountName for LDAP_USER_ATTRIBUTE_USERNAME example
+* Added missing closing HTML tag in template
+* Update Docker image to Alpine 3.12
+* Removed paragonie/random_compat (not required for PHP 7)
+* Setup Dependabot on GitHub
+* Allow use of the user's DN as the group filter substitution
+* Add subtask events to ProjectModificationDateSubscriber
+* Update Vagrantfile to Ubuntu 20.04
+* Open large modal when clicking on edit category link
+* Set margin-bottom at 0 only for the last child of a tooltip element
+* Prevent last swimlane to be hidden if there is only one
+* Execute tooltip listeners only once when the DOM is ready
+* Use Ajax request for Markdown preview
+* Make tooltip events bubble
+* Keep newlines in markdown
+* Show the color dropdown when creating a new automatic action
+* Update translations
+* Correct duration calculation
+* Copy subtask assignee when duplicating a task
+* Save task list order in user session
+* Add action to assign a user when the swimlane change
+
+Version 1.2.14 (April 15, 2020)
+-------------------------------
+
+* Update translations
+* Add new event subtask.create_update
+* Replace Travis CI by GitHub Actions
+* Add option to enable or disable global tags per projects
+* Show group membership(s) in user summary and user list
+* Docker: use real hostname instead of "localhost"
+* Add new task/project image hooks
+* Fix invalid RSS feed encoding
+* Add new plugin hooks
+* Rename "private" projects to "personal"
+* Add per-project and per-swimlane task limits
+* Use parent task color when converting a subtask to task
+* Add environment variables support to configure the application
+* Add the possibility to make project tags global from project settings
+* Fix regex to detect external links with attachments
+* Use KANBOARD_URL to build URIs if specified
+* Make time_spent and time_estimated fields editable for updateTask and createTask API calls
+* Kanboard now requires PHP >= 7.2 since other versions are deprecated
+* Avoid page shrinking when drag and drop cards on iOS devices
+* Added a hover color to i elements inside the "dropdown-submenu-open" class
+* Avoid duplicating Dockerfiles for each architecture
+
+Version 1.2.13 (December 15, 2019)
+----------------------------------
+
+* Adjust width of time tracking column
+* Make subtasks not wrap under icons
+* Make column scrollable in Kanban view
+* Add composer dependency roave/security-advisories
+* Add colors to tag and category lists
+* Update Parsedown to v1.7.3 (security update)
+* Make sure the elements behind the alert notification are clickable after animation
+* Make sure incompatible plugins can be uninstalled from the web ui
+* Move "data-js-lang" attribute to HTML "lang" attribute
+* Update language codes for time picker so the calendars are translated correctly
+* Dropdown in project managers view covers heading
+* Fix date picker datetime parsing when using pre-defined localized versions of am/pm
+* Show ISO date format in application settings
+* Datepicker stores its Spanish locales as "es", not "es-ES" or "es-VE"
+* Increase width of color picker to avoid text overlap in Polish
+* Close open menu when clicking again on the button
+* Fix width of filter bar in mobile
+* In PHP-7.4, nested ternary operators are to be bracketed
+* Change string indexing from {0} to [0] (deprecated in PHP 7.4)
+* Update translations
+
+Version 1.2.12 (Oct 26, 2019)
+-----------------------------
+
+* Update Docker image to Alpine Linux 3.10.3
+* Add new template hook: "template:project-permission:after-adduser"
+* Upgrade jQuery to version 3.4.1
+* Add Spanish (Venezuela) translation
+* Removed color_id requirement for tag API calls
+* Fix subtask restriction modal when clicking on the icon instead of link
+* Use PHPUnit 5 for Vagrant
+* Prevent last project manager role from being removed
+* Check API token before LDAP authentication
+* Make sure task limit consider all open tasks (not only filtered tasks)
+* Update translations
+* Change user filter and category icon
+* Add "anybody" filter
+* Disable user scaling to avoid page shrinking when drag&drop on mobile
+* Fix condition for action "Automatically update the start date when task move away from certain column"
+* Add tests for task link and subtask assignee filters
+* Changes filters from in array to subqueries
+* Add hash to image URL to force browser to update avatar image when changed
+
+Version 1.2.11 (Aug 24, 2019)
+-----------------------------
+
+Breaking Changes:
+
+* Internet Explorer support is now deprecated
+* Add project ID to ExternalTaskProviderInterface::fetch()
+
+Fixes and Improvements:
+
+* Fixed issue of tooltip not disapearing
+* Update Docker image to Alpine Linux 3.10.2
+* Hide due date time on the card if time is 00:00
+* Add new plugin hooks in view switcher
+* Ignore Dockerfiles from git archive
+* Remove dependency on nodejs and gulp
+* Remove dependency on Sass
+    - Convert *.sass files to vanilla CSS
+    - Start using CSS variables
+    - Add PHP minifier
+* Add link button to text editor
+* Implements check for duplicate default categories
+* Implements check for duplicate default columns
+* Fix HTML parsing in Markdown editor
+* Change checkboxes alignment in task creation form
+* Add support for reference:none
+* Fix tabindexes on task creation and modification forms
+* Add option to clone filters on project duplication
+    - Fixed missing metadata option from project "create from"
+    - Added option to clone project custom filters
+    - Added append option to custom field tests
+    - Added a test that uses the "append" option
+    - Fixed disabled swimlane duplication error with Postgresql
+* Update translations
+* Save thumbnails as PNG to have transparency
+* New action to update the start date when a task move away from a column
+* Add the possibility to sort columns by due date
+* Add "identifier" beside "name" while creating a new project
+
+Version 1.2.10 (June 21, 2019)
+------------------------------
+
+* Add Auto-Submitted E-mail header as per RFC 8384
+* Add HTML tag in email notifications
+* Add new hook template:export:header
+* Do not show duplicated results when multiple comments match
+* Add Docker manifest with multiple architectures (arm32v6, arm32v7, arm64v8, amd64)
+* Update Docker image to Alpine 3.10.0
+* Add View File on popover to tooltip
+* Fix text file preview
+* Set "start date" and "end date" on projects from API
+* Add cURL support to HTTP Client
+    - Add HTTP_PROXY_EXCLUDE option when cURL is used
+    - Show HTTP client backend in about page
+    - Fallback to legacy Stream Contexts if cURL extension is not available
+* Add Bitcoin to the currency list
+* Add automatic action to move task between columns based on due date
+* Fixes icon opacity when hovered
+* Hide one task count when there is only one swimlane
+* Update translations
+
+Version 1.2.9 (April 5, 2019)
+-----------------------------
+
+* Add Slovak translation
+* Update translations
+* Changes search by reference to case insentive
+* Fix postgres explicit schema name usage
+* Simplify local Docker image build
+* Show a 404 when accessing data folder from URL (Docker Image)
+* Clarify the comment about MAIL_SMTP_ENCRYPTION
+* Remove dependency on Bower
+* Replaces accordion Javascript component by <details> HTML element
+* Fix MySQL migration when using increment values different from 1
+* Add missing webhook event: task.move.project
+* Add new actions to reorder tasks by column
+
+Version 1.2.8 (February 2, 2019)
+--------------------------------
+
+Breaking Changes:
+
+* Authorize only API tokens when 2FA is enabled (no user password)
+* Disable by default plugin installer for security reasons:
+    - There is no code review or any approval process to submit a plugin.
+    - This is up to the Kanboard instance owner to validate if a plugin is legit.
+
+Fixes and Improvements:
+
+* Limit avatar image size
+* Avoid CSRF in users CSV import
+* Avoid XSS in pagination sorting
+* Do not show projects dropdown when prompting the 2FA code
+* Always returns a 404 instead of 403 to avoid people discovering users
+* Check if user role has changed while the session is open
+* Add missing CSRF check in TwoFactorController::deactivate()
+* Hide edit button when user cannot edit task
+* Fix permission check before "Assign to me"
+* Fix permission check before showing project options
+* Fix assignable users on a group with a custom role
+* Fix import of automatic actions when parameters are "unassigned" or "no category"
+* Update license year
+* Update Docker image to Alpine 3.9
+* Update translations
+* Fix PHP error in task views (tag colors)
+* Limit assignee drop-down selector scope
+
+Version 1.2.7 (December 19, 2018)
+---------------------------------
+
+* Write log entry on file removal
+* Auto link duplicated tasks
+* Auto link tasks duplicated to another project
+* Auto link tasks created from a subtask
+* Redirect to board view of the current task after duplication
+* Fix broken link to contributor page
+* Add automatic action for moving a task to a swimlane based on category change
+* Add automatic action to assign a category based on swimlane change
+* Add ordering comments by id along with creation date
+* Fix custom roles duplication (source and destination column_id)
+* Add locale en_GB
+* New automatic action: move the task to another swimlane when assigned
+* Disable php_uname() warning for restrictive environments
+* Add hook to board settings
+* Add method remove() to settings model
+* Add php7-bcmath to Docker image
+* Add sorting by reference in list view
+* Added priority, swimlane, and column values from parent task to task converted from subtask
+* Update translations
+
+Version 1.2.6 (October 10, 2018)
+--------------------------------
+
+* Escape table name 'groups' because groups is a reserved word as of MySql 8.0.2
+* Reduce number of SQL queries when doing groups sync
+* Make swimlane filter compatible with numeric title
+* Duplicate reference fields when duplicating a task
+* Do not try to redirect to login page when offline
+* Define fixed width for auto-complete dropdown
+* Fix task drag and drop slowdown when a column is hidden
+* Make PLUGINS_DIR absolute in config.default.php
+* Add custom roles project duplication
+* Allow 'No assignee' for external task on single user public boards
+* Add tag and category colors
+* Exclude task links and user mentions from nesting (Markdown parser)
+* When forcing HTTPS, handle subfolder URLs properly
+* Add search within a range of dates for completion, modification, creation, and moved fields
+* Update Docker image to Alpine Linux 3.8
+* Make sure the presense of mod_env is checked in .htaccess
+* Make HTTP client timeout configurable
+* Use SET NAMES instead of charset for MySQL connection
+* Vendoring deprecated Composer libs
+* Update translations and fix typos
+
+Version 1.2.5 (June 15, 2018)
+-----------------------------
+
+* Update jQuery to latest version
+* Defer javascript files loading by default
+* Add quick link "assign me" in different views
+* Add bulk task operations in list view
+* Add checkboxes in list view to move tasks to another column at once
+* Make sure automatic actions are applied to all tasks when using bulk operations
+* Add ability to run cron jobs by calling URL
+* Add basic print stylesheet
+* Add dashboard and search task footer hooks
+* Reword project settings label
+* Improve Docker image config overrides
+* Fix cronjob in Docker image
+* Increase Nginx fastcgi buffers for Docker image
+* Increase size of the "users.language" column
+* Update translations and improve English texts
+
+Version 1.2.4 (May 16, 2018)
+----------------------------
+
+* Rewrite tooltip code without jQuery
+* Update Parsedown library
+* Remove all attachments when removing a project
+* Improve whitespace handling in "cli locale:compare" command
+* Don't markdown project owner's name in header tooltip
+* Add SSL to Docker image
+* Avoid people to remove themselves from project permissions
+* Fix escaping issue in Markdown editor
+* Add data/config.php to .gitignore
+* Clarified text label for notification settings
+* Add Ukrainian translation
+* Do not show inactive users in group members dropdown
+* Improve dashboard pagination
+* Make list view more compact
+* Hide private projects checkbox if the feature is disabled
+* Make cli locale commands working outside of source tree
+* Make subtask title text field wider when editing subtasks
+* Add link to open images in a new tab
+* Make hardcoded hours string translatable
+* Translation updates
+
+Version 1.2.3 (April 18, 2018)
+------------------------------
+
+New features:
+
+* Add Project MetaData API calls
+* Add default filter per user
+
+Improvements:
+
+* Use utf8mb4 encoding for MySQL instead of utf8 (Emoji support)
+* Increase text fields length in several tables
+* Move documentation to https://docs.kanboard.org/
+* Make sure no empty group is submitted on project permissions page
+* Translate subtasks status and internal links labels in notifications
+* Add link to tasks and projects in overdue notifications
+* Add missing translations
+* Move custom libs to the source tree
+
+Bug fixes:
+
+* Fix margin for task recurrence tooltip
+
+Version 1.2.2 (March 30, 2018)
+------------------------------
+
+Improvements:
+
+* Add thumbnail quality parameter (default to 95)
+* Always display SQL errors
+* Move SimpleLogger lib into app source tree
+* Add system log driver and use it by default
+* Display exceptions from plugins while refreshing board
+* Redirect to original URL after OAuth login
+* Add author name and email arguments to mail client
+* Improve HTTP client to raise exceptions
+* Update translations
+
+Bug fixes:
+
+* Fix broken daily summary export
+* Fix role precedence in LDAP integration
+
+Version 1.2.1 (February 28, 2018)
+---------------------------------
+
+New features:
+
+* Add automatic action to change column once a start date is reached
+* Add automatic action to change color once start date is reached
+* Add CSS class to categories to allow custom styling
+* Add option to disable Mysql SSL server verification
+* Add timeout parameter for database connection
+* Add error log for authentication failure to allow fail2ban integration
+
+Improvements:
+
+* Set the correct swimlane/column ID when moving a task via its internal dialog
+* Allow filtering for tasks without due date
+* Add plugin hook 'aftersave' after creating Task
+* Run SessionHandler::write() into a transaction
+* Remove dependency on PicoFeed
+* Add CSRF check for task and project files upload
+* Add missing CSRF check on avatar upload form
+* Add missing CSRF check in saveUploadDB() method
+* Update Vagrantfile to use Ubuntu Xenial
+* Send event author in webhook notification
+* Update translations
+* Update documentation
+
 Version 1.2.0 (December 27, 2017)
 ---------------------------------
 

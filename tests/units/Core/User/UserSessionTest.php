@@ -20,6 +20,7 @@ class UserSessionTest extends Base
             'is_ldap_user' => '0',
             'twofactor_activated' => '0',
             'role' => Role::APP_MANAGER,
+            'filter' => 'status:close',
         );
 
         $userSession->initialize($user);
@@ -28,6 +29,7 @@ class UserSessionTest extends Base
         $this->assertEquals(123, $_SESSION['user']['id']);
         $this->assertEquals('john', $_SESSION['user']['username']);
         $this->assertEquals(Role::APP_MANAGER, $_SESSION['user']['role']);
+        $this->assertEquals('status:close', $_SESSION['user']['filter']);
         $this->assertFalse($_SESSION['user']['is_ldap_user']);
         $this->assertFalse($_SESSION['user']['twofactor_activated']);
         $this->assertArrayNotHasKey('password', $_SESSION['user']);
@@ -83,6 +85,9 @@ class UserSessionTest extends Base
         $userSession = new UserSession($this->container);
         $this->assertEquals('status:open', $userSession->getFilters(1));
 
+        $_SESSION['user'] = array('filter' => 'status:open');
+        $this->assertEquals('status:open', $userSession->getFilters(1));
+
         $userSession->setFilters(1, 'assignee:me');
         $this->assertEquals('assignee:me', $userSession->getFilters(1));
 
@@ -90,6 +95,28 @@ class UserSessionTest extends Base
 
         $userSession->setFilters(2, 'assignee:bob');
         $this->assertEquals('assignee:bob', $userSession->getFilters(2));
+    }
+
+    public function testListOrder()
+    {
+        $userSession = new UserSession($this->container);
+        list($order, $direction) = $userSession->getListOrder(1);
+        $this->assertEquals('tasks.id', $order);
+        $this->assertEquals('DESC', $direction);
+
+        $userSession->setListOrder(1, 'tasks.priority', 'ASC');
+        list($order, $direction) = $userSession->getListOrder(1);
+        $this->assertEquals('tasks.priority', $order);
+        $this->assertEquals('ASC', $direction);
+
+        list($order, $direction) = $userSession->getListOrder(2);
+        $this->assertEquals('tasks.id', $order);
+        $this->assertEquals('DESC', $direction);
+
+        $userSession->setListOrder(2, 'tasks.is_active', 'DESC');
+        list($order, $direction) = $userSession->getListOrder(2);
+        $this->assertEquals('tasks.is_active', $order);
+        $this->assertEquals('DESC', $direction);
     }
 
     public function testPostAuthentication()

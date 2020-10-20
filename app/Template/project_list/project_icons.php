@@ -2,21 +2,19 @@
     &nbsp;
 
     <?php if ($project['is_public']): ?>
-        <i class="fa fa-share-alt fa-fw" title="<?= t('Shared project') ?>"></i>
+        <i class="fa fa-share-alt fa-fw" title="<?= t('Shared project') ?>" role="img" aria-label="<?= t('Shared project') ?>"></i>
     <?php endif ?>
 
     <?php if ($project['is_private']): ?>
-        <i class="fa fa-lock fa-fw" title="<?= t('Private project') ?>"></i>
+        <i class="fa fa-lock fa-fw" title="<?= t('Personal project') ?>" role="img" aria-label="<?= t('Personal project') ?>"></i>
     <?php endif ?>
 
     <?php if ($this->user->hasAccess('ProjectUserOverviewController', 'managers')): ?>
-        <span class="tooltip" title="<?= t('Members') ?>" data-href="<?= $this->url->href('ProjectUserOverviewController', 'users', array('project_id' => $project['id'])) ?>"><i class="fa fa-users"></i></span>&nbsp;
+        <?= $this->app->tooltipLink('<i class="fa fa-users"></i>', $this->url->href('ProjectUserOverviewController', 'users', array('project_id' => $project['id']))) ?>
     <?php endif ?>
 
     <?php if (! empty($project['description'])): ?>
-        <span class="tooltip" title="<?= $this->text->markdownAttribute($project['description']) ?>">
-            <i class="fa fa-info-circle"></i>
-        </span>
+        <?= $this->app->tooltipMarkdown($project['description']) ?>
     <?php endif ?>
 
     <?php if ($project['is_active'] == 0): ?>

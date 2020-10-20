@@ -48,19 +48,8 @@ class TextHelper extends Base
     {
         $parser = new Markdown($this->container, $isPublicLink);
         $parser->setMarkupEscaped(MARKDOWN_ESCAPE_HTML);
+        $parser->setBreaksEnabled(true);
         return $parser->text($text);
-    }
-
-    /**
-     * Escape Markdown text that need to be stored in HTML attribute
-     *
-     * @access public
-     * @param  string $text
-     * @return mixed
-     */
-    public function markdownAttribute($text)
-    {
-        return htmlentities($this->markdown($text), ENT_QUOTES, 'UTF-8');
     }
 
     /**

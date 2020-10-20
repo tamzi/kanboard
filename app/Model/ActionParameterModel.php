@@ -147,19 +147,25 @@ class ActionParameterModel extends Base
             case 'project_id':
                 return $value != $project_id ? $value : false;
             case 'category_id':
+                if ($value == 0) {
+                    return 0;
+                }
                 return $this->categoryModel->getIdByName($project_id, $this->categoryModel->getNameById($value)) ?: false;
             case 'src_column_id':
             case 'dest_column_id':
             case 'dst_column_id':
             case 'column_id':
                 $column = $this->columnModel->getById($value);
-                return empty($column) ? false : $this->columnModel->getColumnIdByTitle($project_id, $column['title']) ?: false;
+                return empty($column) ? false : ($this->columnModel->getColumnIdByTitle($project_id, $column['title']) ?: false);
             case 'user_id':
             case 'owner_id':
+                if ($value == 0) {
+                    return 0;
+                }
                 return $this->projectPermissionModel->isAssignable($project_id, $value) ? $value : false;
             case 'swimlane_id':
                 $column = $this->swimlaneModel->getById($value);
-                return empty($column) ? false : $this->swimlaneModel->getIdByName($project_id, $column['name']) ?: false;
+                return empty($column) ? false : ($this->swimlaneModel->getIdByName($project_id, $column['name']) ?: false);
             default:
                 return $value;
         }

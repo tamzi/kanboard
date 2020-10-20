@@ -56,7 +56,7 @@ class LdapUserTest extends Base
                 'getGroupUserFilter',
                 'getGroupAdminDn',
                 'getGroupManagerDn',
-                'getBasDn',
+                'getBaseDn',
             ))
             ->getMock();
     }
@@ -127,7 +127,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('ou=People,dc=kanboard,dc=local'));
 
         $user = $this->user->find('(uid=my_ldap_user)');
@@ -136,7 +136,7 @@ class LdapUserTest extends Base
         $this->assertEquals('my_ldap_user', $user->getUsername());
         $this->assertEquals('My LDAP user', $user->getName());
         $this->assertEquals('user1@localhost', $user->getEmail());
-        $this->assertEquals(null, $user->getRole());
+        $this->assertEquals(Role::APP_USER, $user->getRole());
         $this->assertSame('', $user->getPhoto());
         $this->assertEquals(array(), $user->getExternalGroupIds());
         $this->assertEquals(array('is_ldap_user' => 1), $user->getExtraAttributes());
@@ -202,7 +202,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('ou=People,dc=kanboard,dc=local'));
 
         $user = $this->user->find('(uid=my_ldap_user)');
@@ -231,8 +231,10 @@ class LdapUserTest extends Base
                     0 => 'my_ldap_user',
                 ),
                 'memberof' => array(
-                    'count' => 1,
-                    0 => 'CN=Kanboard-Admins,CN=Users,DC=kanboard,DC=local',
+                    'count' => 3,
+                    0 => 'CN=Kanboard-Users,CN=Users,DC=kanboard,DC=local',
+                    1 => 'CN=Kanboard-Managers,CN=Users,DC=kanboard,DC=local',
+                    2 => 'CN=Kanboard-Admins,CN=Users,DC=kanboard,DC=local',
                 ),
                 0 => 'displayname',
                 1 => 'mail',
@@ -291,7 +293,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('ou=People,dc=kanboard,dc=local'));
 
         $user = $this->user->find('(uid=my_ldap_user)');
@@ -301,7 +303,14 @@ class LdapUserTest extends Base
         $this->assertEquals('My LDAP user', $user->getName());
         $this->assertEquals('user1@localhost', $user->getEmail());
         $this->assertEquals(Role::APP_ADMIN, $user->getRole());
-        $this->assertEquals(array('CN=Kanboard-Admins,CN=Users,DC=kanboard,DC=local'), $user->getExternalGroupIds());
+        $this->assertEquals(
+            array(
+                'CN=Kanboard-Users,CN=Users,DC=kanboard,DC=local',
+                'CN=Kanboard-Managers,CN=Users,DC=kanboard,DC=local',
+                'CN=Kanboard-Admins,CN=Users,DC=kanboard,DC=local',
+            ),
+            $user->getExternalGroupIds()
+        );
         $this->assertEquals(array('is_ldap_user' => 1), $user->getExtraAttributes());
     }
 
@@ -387,7 +396,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('ou=People,dc=kanboard,dc=local'));
 
         $user = $this->user->find('(uid=my_ldap_user)');
@@ -442,7 +451,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('ou=People,dc=kanboard,dc=local'));
 
         $user = $this->user->find('(uid=my_ldap_user)');
@@ -534,7 +543,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('OU=Users,DC=kanboard,DC=local'));
 
         $this->group
@@ -640,7 +649,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('OU=Users,DC=kanboard,DC=local'));
 
         $this->group
@@ -751,7 +760,7 @@ class LdapUserTest extends Base
 
         $this->user
             ->expects($this->any())
-            ->method('getBasDn')
+            ->method('getBaseDn')
             ->will($this->returnValue('OU=Users,DC=kanboard,DC=local'));
 
         $this->group
@@ -778,15 +787,15 @@ class LdapUserTest extends Base
 
     public function testGetBaseDnNotConfigured()
     {
-        $this->setExpectedException('\LogicException');
+        $this->expectException('\LogicException');
 
         $user = new User($this->query);
-        $user->getBasDn();
+        $user->getBaseDn();
     }
 
     public function testGetLdapUserPatternNotConfigured()
     {
-        $this->setExpectedException('\LogicException');
+        $this->expectException('\LogicException');
 
         $user = new User($this->query);
         $user->getLdapUserPattern('test');

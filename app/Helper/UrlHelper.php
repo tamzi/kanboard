@@ -25,7 +25,16 @@ class UrlHelper extends Base
      */
     public function doc($label, $file)
     {
-        return $this->link($label, 'DocumentationController', 'show', array('file' => $file), false, '', '', true);
+        $version = 'latest';
+
+        if (substr(APP_VERSION, 0, 1) === 'v') {
+            $version = substr(APP_VERSION, 1);
+        } else if (ctype_digit(substr(APP_VERSION, 0, 1))) {
+            $version = APP_VERSION;
+        }
+
+        $url = sprintf(DOCUMENTATION_URL_PATTERN, $version, $file);
+        return sprintf('<a href="%s" target="_blank">%s</a>', $url, $label);
     }
 
     /**
@@ -162,9 +171,13 @@ class UrlHelper extends Base
     public function dir()
     {
         if ($this->directory === '' && $this->request->getMethod() !== '') {
-            $this->directory = str_replace('\\', '/', dirname($this->request->getServerVariable('PHP_SELF')));
-            $this->directory = $this->directory !== '/' ? $this->directory.'/' : '/';
-            $this->directory = str_replace('//', '/', $this->directory);
+            if (defined('KANBOARD_URL') && strlen(KANBOARD_URL) > 0) {
+                $this->directory = parse_url(KANBOARD_URL, PHP_URL_PATH);
+            } else {
+                $this->directory = str_replace('\\', '/', dirname($this->request->getServerVariable('PHP_SELF')));
+                $this->directory = $this->directory !== '/' ? $this->directory.'/' : '/';
+                $this->directory = str_replace('//', '/', $this->directory);
+            }
         }
 
         return $this->directory;

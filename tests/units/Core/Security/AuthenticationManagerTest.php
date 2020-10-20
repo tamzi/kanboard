@@ -22,14 +22,14 @@ class AuthenticationManagerTest extends Base
     public function testGetProviderNotFound()
     {
         $authManager = new AuthenticationManager($this->container);
-        $this->setExpectedException('LogicException');
+        $this->expectException('LogicException');
         $authManager->getProvider('Dababase');
     }
 
     public function testGetPostProviderNotFound()
     {
         $authManager = new AuthenticationManager($this->container);
-        $this->setExpectedException('LogicException');
+        $this->expectException('LogicException');
         $authManager->getPostAuthenticationProvider();
     }
 
@@ -56,7 +56,7 @@ class AuthenticationManagerTest extends Base
         $authManager = new AuthenticationManager($this->container);
         $authManager->register(new DatabaseAuth($this->container));
 
-        $_SESSION['user'] = array('id' => 1, 'username' => 'test');
+        $_SESSION['user'] = array('id' => 1, 'username' => 'test', 'role' => 'app-admin');
 
         $this->assertTrue($this->container['userSession']->isLogged());
         $this->assertTrue($authManager->checkCurrentSession());
@@ -67,7 +67,7 @@ class AuthenticationManagerTest extends Base
         $authManager = new AuthenticationManager($this->container);
         $authManager->register(new DatabaseAuth($this->container));
 
-        $_SESSION['user'] = array('id' => 42, 'username' => 'test');
+        $_SESSION['user'] = array('id' => 42, 'username' => 'test', 'role' => 'app-admin');
 
         $this->assertTrue($this->container['userSession']->isLogged());
         $this->assertFalse($authManager->checkCurrentSession());

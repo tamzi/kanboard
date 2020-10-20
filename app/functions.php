@@ -2,6 +2,28 @@
 
 use Kanboard\Core\Translator;
 
+function concat_files(array $files)
+{
+    $data = '';
+    foreach ($files as $pattern) {
+        foreach (glob($pattern, GLOB_ERR | GLOB_NOCHECK) as $filename) {
+            echo $filename.PHP_EOL;
+            if (! file_exists($filename)) {
+                die("$filename not found\n");
+            }
+
+            $contents = file_get_contents($filename);
+            if ($contents === false) {
+                die("Unable to read $filename\n");
+            }
+
+            $data .= $contents;
+        }
+    }
+
+    return $data;
+}
+
 function session_get($key)
 {
     return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
@@ -166,8 +188,6 @@ function array_column_sum(array &$input, $column)
  */
 function build_app_version($ref, $commit_hash)
 {
-    $version = 'master';
-
     if ($ref !== '$Format:%d$') {
         $tag = preg_replace('/\s*\(.*tag:\sv([^,]+).*\)/i', '\1', $ref);
 
@@ -177,10 +197,12 @@ function build_app_version($ref, $commit_hash)
     }
 
     if ($commit_hash !== '$Format:%H$') {
-        $version .= '.'.$commit_hash;
+        return 'master.'.$commit_hash;
+    } else if (file_exists('/version.txt')) {
+        return file_get_contents('/version.txt');
     }
 
-    return $version;
+    return 'master.unknown_revision';
 }
 
 /**

@@ -8,7 +8,16 @@
         <?= $this->form->hidden('is_private', $values) ?>
 
         <?= $this->form->label(t('Name'), 'name') ?>
-        <?= $this->form->text('name', $values, $errors, array('autofocus', 'required', 'maxlength="50"')) ?>
+        <?= $this->form->text('name', $values, $errors, array('autofocus', 'required')) ?>
+
+        <?= $this->form->label(t('Identifier'), 'identifier') ?>
+        <?= $this->form->text('identifier', $values, $errors, array('autofocus')) ?>
+        <p class="form-help"><?= t('The project identifier is optional and must be alphanumeric, example: MYPROJECT.') ?></p>
+
+        <?= $this->form->checkbox('per_swimlane_task_limits', t('Column task limits apply to each swimlane individually'), 1, false) ?>
+
+        <?= $this->form->label(t('Task limit'), 'task_limit') ?>
+        <?= $this->form->number('task_limit', $values, $errors) ?>
 
         <?php if (count($projects_list) > 1): ?>
             <?= $this->form->label(t('Create from another project'), 'src_project_id') ?>
@@ -20,11 +29,14 @@
 
             <?php if (! $is_private): ?>
                 <?= $this->form->checkbox('projectPermissionModel', t('Permissions'), 1, true) ?>
+                <?= $this->form->checkbox('projectRoleModel', t('Custom roles'), 1, true) ?>
             <?php endif ?>
 
             <?= $this->form->checkbox('categoryModel', t('Categories'), 1, true) ?>
             <?= $this->form->checkbox('tagDuplicationModel', t('Tags'), 1, true) ?>
             <?= $this->form->checkbox('actionModel', t('Actions'), 1, true) ?>
+            <?= $this->form->checkbox('customFilterModel', t('Custom filters'), 1, true) ?>
+            <?= $this->form->checkbox('projectMetadataModel', t('Metadata'), 1, false) ?>
             <?= $this->form->checkbox('projectTaskDuplicationModel', t('Tasks'), 1, false) ?>
         </div>
 
@@ -32,7 +44,7 @@
     </form>
     <?php if ($is_private): ?>
     <div class="alert alert-info">
-        <p><?= t('There is no user management for private projects.') ?></p>
+        <p><?= t('There is no user management for personal projects.') ?></p>
     </div>
     <?php endif ?>
 </section>

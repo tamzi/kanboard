@@ -5,13 +5,13 @@
         <?php foreach ($grouped_links as $link): ?>
             <?php if (! $hide_td): ?>
                 <tr>
-                    <th class="column-45">
+                    <th>
                         <?= t('This task') ?>
                         <em><?= t($label) ?></em>
                         <span class="task-links-task-count">(<?= count($grouped_links) ?>)</span>
                     </th>
-                    <th class="column-15"><?= t('Assignee') ?></th>
-                    <th><?= t('Time tracking') ?></th>
+                    <th class="column-10"><?= t('Assignee') ?></th>
+                    <th class="column-30"><?= t('Time tracking') ?></th>
                 </tr>
                 <?php $hide_td = true ?>
             <?php endif ?>
@@ -64,11 +64,11 @@
             </td>
             <td>
                 <?php if (! empty($link['task_time_spent'])): ?>
-                    <strong><?= $this->text->e($link['task_time_spent']).'h' ?></strong> <?= t('spent') ?>
+                    <?= t('%sh spent', n($link['task_time_spent'])) ?>
                 <?php endif ?>
-
+                <?php if (! empty($link['task_time_spent']) && ! empty($link['task_time_estimated'])): ?>/<?php endif ?>
                 <?php if (! empty($link['task_time_estimated'])): ?>
-                    <strong><?= $this->text->e($link['task_time_estimated']).'h' ?></strong> <?= t('estimated') ?>
+                    <?= t('%sh estimated', n($link['task_time_estimated'])) ?>
                 <?php endif ?>
             </td>
         </tr>
