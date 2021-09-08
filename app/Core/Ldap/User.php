@@ -121,15 +121,14 @@ class User
      */
     protected function getRole(array $groupIds)
     {
-        $role = Role::APP_USER;
-
         if (! $this->hasGroupsConfigured()) {
-            if (LDAP_USER_DEFAULT_ROLE_MANAGER) {
-                $role = Role::APP_MANAGER;
-            } else {
-                $role = Role::APP_USER;
-            }
-            return $role;
+            return null;
+        }
+	
+        if (LDAP_USER_DEFAULT_ROLE_MANAGER) {
+            $role = Role::APP_MANAGER;
+        } else {
+            $role = Role::APP_USER;
         }
 
         foreach ($groupIds as $groupId) {
@@ -343,10 +342,6 @@ class User
      */
     public function getBaseDn()
     {
-        if (! LDAP_USER_BASE_DN) {
-            throw new LogicException('LDAP user base DN empty, check the parameter LDAP_USER_BASE_DN');
-        }
-
         return LDAP_USER_BASE_DN;
     }
 

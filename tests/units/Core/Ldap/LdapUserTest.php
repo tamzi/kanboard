@@ -136,7 +136,7 @@ class LdapUserTest extends Base
         $this->assertEquals('my_ldap_user', $user->getUsername());
         $this->assertEquals('My LDAP user', $user->getName());
         $this->assertEquals('user1@localhost', $user->getEmail());
-        $this->assertEquals(Role::APP_USER, $user->getRole());
+        $this->assertEquals(null, $user->getRole());
         $this->assertSame('', $user->getPhoto());
         $this->assertEquals(array(), $user->getExternalGroupIds());
         $this->assertEquals(array('is_ldap_user' => 1), $user->getExtraAttributes());
@@ -783,14 +783,6 @@ class LdapUserTest extends Base
         );
         $this->assertEquals(Role::APP_USER, $user->getRole());
         $this->assertEquals(array('is_ldap_user' => 1), $user->getExtraAttributes());
-    }
-
-    public function testGetBaseDnNotConfigured()
-    {
-        $this->expectException('\LogicException');
-
-        $user = new User($this->query);
-        $user->getBaseDn();
     }
 
     public function testGetLdapUserPatternNotConfigured()
