@@ -2,12 +2,11 @@ name: Linters
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   jshint:
     runs-on: ubuntu-latest
-    container: kanboard/tests:latest
     steps:
       - uses: actions/checkout@v2
       - name: Install jshint
