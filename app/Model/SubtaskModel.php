@@ -237,7 +237,9 @@ class SubtaskModel extends Base
     public function update(array $values, $fireEvent = true)
     {
         $this->prepare($values);
-        $result = $this->db->table(self::TABLE)->eq('id', $values['id'])->save($values);
+        $updates = $values;
+        unset($updates['id']);
+        $result = $this->db->table(self::TABLE)->eq('id', $values['id'])->save($updates);
 
         if ($result) {
             $subtask = $this->getById($values['id']);
@@ -265,7 +267,13 @@ class SubtaskModel extends Base
     public function remove($subtaskId)
     {
         $this->subtaskEventJob->execute($subtaskId, array(self::EVENT_DELETE));
-        return $this->db->table(self::TABLE)->eq('id', $subtaskId)->remove();
+
+        $subtask = $this->getById($subtaskId);
+        $result = $this->db->table(self::TABLE)->eq('id', $subtaskId)->remove();
+
+        $this->subtaskTimeTrackingModel->updateTaskTimeTracking($subtask['task_id']);
+
+        return $result;
     }
 
     /**
