@@ -1,5 +1,7 @@
 *.sqlite
 *.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
 .buildpath
 .project
 /.settings/
@@ -24,3 +26,4 @@ data/config.php
 !docker/var/wwww/app/config.php
 node_modules
 .phpunit.result.cache
+app/version.txt

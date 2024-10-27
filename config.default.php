@@ -47,7 +47,7 @@ define('MAIL_FROM', 'replace-me@kanboard.local');
 // E-mail address used for the "Bcc" header to send a copy of all notifications
 define('MAIL_BCC', '');
 
-// Mail transport available: "smtp", "sendmail", "mail" (PHP mail function), "postmark", "mailgun", "sendgrid"
+// Mail transport available: "smtp", "sendmail", "mail" (PHP mail function)
 define('MAIL_TRANSPORT', 'mail');
 
 // SMTP configuration to use when the "smtp" transport is chosen
@@ -107,6 +107,9 @@ define('LDAP_AUTH', false);
 
 // LDAP server protocol, hostname and port URL (ldap[s]://hostname:port)
 define('LDAP_SERVER', '');
+
+// LDAP server port (389 by default)
+define('LDAP_PORT', 389);
 
 // By default, require certificate to be verified for ldaps:// style URL. Set to false to skip the verification
 define('LDAP_SSL_VERIFY', true);
@@ -283,3 +286,6 @@ define('SHOW_GROUP_MEMBERSHIPS_IN_USERLIST', true);
 // ... when hovering the mouse over the group-icon of a given user!)
 // If set to 0 ALL group-memberships will be listed (7 by default)
 define('SHOW_GROUP_MEMBERSHIPS_IN_USERLIST_WITH_LIMIT', 7);
+
+// Dashboard settings
+define('DASHBOARD_MAX_PROJECTS', 10);

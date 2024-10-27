@@ -1,4 +1,4 @@
-FROM alpine:3.17
+FROM alpine:3.20
 
 LABEL org.opencontainers.image.source https://github.com/kanboard/kanboard
 LABEL org.opencontainers.image.title=Kanboard
@@ -17,12 +17,13 @@ EXPOSE 80 443
 ARG VERSION
 
 RUN apk --no-cache --update add \
-    tzdata openssl unzip nginx bash ca-certificates s6 curl ssmtp mailx php81 php81-phar php81-curl \
-    php81-fpm php81-json php81-zlib php81-xml php81-dom php81-ctype php81-opcache php81-zip php81-iconv \
-    php81-pdo php81-pdo_mysql php81-pdo_sqlite php81-pdo_pgsql php81-mbstring php81-session php81-bcmath \
-    php81-gd php81-openssl php81-sockets php81-posix php81-ldap php81-simplexml && \
+    tzdata openssl unzip nginx bash ca-certificates s6 curl ssmtp mailx php83 php83-phar php83-curl \
+    php83-fpm php83-json php83-zlib php83-xml php83-dom php83-ctype php83-opcache php83-zip php83-iconv \
+    php83-pdo php83-pdo_mysql php83-pdo_sqlite php83-pdo_pgsql php83-mbstring php83-session php83-bcmath \
+    php83-gd php83-openssl php83-sockets php83-posix php83-ldap php83-simplexml php83-xmlwriter && \
     rm -rf /var/www/localhost && \
-    rm -f /etc/php81/php-fpm.d/www.conf
+    rm -f /etc/php83/php-fpm.d/www.conf && \
+    ln -sf /usr/bin/php83 /usr/bin/php
 
 ADD . /var/www/app
 ADD docker/ /

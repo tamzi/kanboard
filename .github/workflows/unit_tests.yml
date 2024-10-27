@@ -4,12 +4,30 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  packages: read
+
 jobs:
   Sqlite:
     runs-on: ubuntu-latest
-    container: kanboard/tests:latest
+    container:
+      image: ghcr.io/kanboard/tests:latest
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+    - name: Unit tests with Sqlite
+      run: ./vendor/bin/phpunit -c tests/units.sqlite.xml
+
+  Sqlite-PHP8:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
     - name: Validate composer.json and composer.lock
       run: composer validate
     - name: Install dependencies
@@ -19,7 +37,11 @@ jobs:
 
   Postgres:
     runs-on: ubuntu-latest
-    container: kanboard/tests:latest
+    container:
+      image: ghcr.io/kanboard/tests:latest
+      credentials:
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     services:
       postgres:
         image: postgres:9.4
@@ -35,7 +57,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Validate composer.json and composer.lock
       run: composer validate
     - name: Install dependencies
@@ -76,7 +98,7 @@ jobs:
         - 1433:1433
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: install php and database client packages
       run: |
         sudo apt-get update
@@ -171,7 +193,7 @@ jobs:
         exit $rc
     - name: save kanboard debug logfile
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         if-no-files-found: ignore
         name: kanboard_units_debug-MSSQL.log

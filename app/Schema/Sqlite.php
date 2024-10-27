@@ -8,8 +8,17 @@ use Kanboard\Core\Security\Token;
 use Kanboard\Core\Security\Role;
 use PDO;
 
-const VERSION = 126;
+const VERSION = 128;
 
+function version_128(PDO $pdo)
+{
+    $pdo->exec("ALTER TABLE comments ADD COLUMN visibility VARCHAR(25) NOT NULL DEFAULT '".Role::APP_USER."'");
+}
+
+function version_127(PDO $pdo)
+{
+    $pdo->exec("ALTER TABLE users ADD COLUMN theme TEXT DEFAULT 'light' NOT NULL");
+}
 
 function version_126(PDO $pdo)
 {
@@ -463,12 +472,12 @@ function version_90(PDO $pdo)
     $rq->execute();
     $rows = $rq->fetchAll(PDO::FETCH_ASSOC) ?: array();
 
-    $rq = $pdo->prepare('UPDATE project_has_users SET "role"=? WHERE "id"=?');
+    $rq = $pdo->prepare('UPDATE project_has_users SET "role"=? WHERE "user_id"=?');
 
     foreach ($rows as $row) {
         $rq->execute(array(
             $row['is_owner'] == 1 ? Role::PROJECT_MANAGER : Role::PROJECT_MEMBER,
-            $row['id'],
+            $row['user_id'],
         ));
     }
 }
