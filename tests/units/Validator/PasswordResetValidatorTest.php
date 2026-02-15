@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../Base.php';
+namespace KanboardTests\units\Validator;
 
+use KanboardTests\units\Base;
 use Kanboard\Validator\PasswordResetValidator;
 
 class PasswordResetValidatorTest extends Base
@@ -32,7 +33,7 @@ class PasswordResetValidatorTest extends Base
         $_SESSION['captcha'] = 'test';
 
         $passwordResetValidator = new PasswordResetValidator($this->container);
-        list($valid,) = $passwordResetValidator->validateCreation(array('username' => 'foobar', 'captcha' => 'test'));
+        list($valid, ) = $passwordResetValidator->validateCreation(array('username' => 'foobar', 'captcha' => 'test'));
         $this->assertTrue($valid);
     }
 
@@ -41,7 +42,7 @@ class PasswordResetValidatorTest extends Base
         $_SESSION['captcha'] = 'test';
 
         $passwordResetValidator = new PasswordResetValidator($this->container);
-        list($valid,) = $passwordResetValidator->validateCreation(array('captcha' => 'test'));
+        list($valid, ) = $passwordResetValidator->validateCreation(array('captcha' => 'test'));
         $this->assertFalse($valid);
     }
 
@@ -50,14 +51,14 @@ class PasswordResetValidatorTest extends Base
         $_SESSION['captcha'] = 'test123';
 
         $passwordResetValidator = new PasswordResetValidator($this->container);
-        list($valid,) = $passwordResetValidator->validateCreation(array('username' => 'foobar', 'captcha' => 'test'));
+        list($valid, ) = $passwordResetValidator->validateCreation(array('username' => 'foobar', 'captcha' => 'test'));
         $this->assertFalse($valid);
     }
 
     public function testValidateCreationWithMissingCaptcha()
     {
         $passwordResetValidator = new PasswordResetValidator($this->container);
-        list($valid,) = $passwordResetValidator->validateCreation(array('username' => 'foobar', 'captcha' => 'test'));
+        list($valid, ) = $passwordResetValidator->validateCreation(array('username' => 'foobar', 'captcha' => 'test'));
         $this->assertFalse($valid);
     }
 }

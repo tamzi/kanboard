@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../../Base.php';
+namespace KanboardTests\units\Core\Ldap;
 
+use KanboardTests\units\Base;
 use Kanboard\Core\Ldap\Query;
 use Kanboard\Core\Ldap\User;
 use Kanboard\Core\Ldap\Entries;
@@ -809,6 +810,15 @@ class LdapUserTest extends Base
 
         $user = new User($this->query);
         $this->assertEquals($expected, $user->getLdapUserPattern('test', $filter));
+    }
+
+    public function testGetLdapUserPatternWithSpecialCharacters()
+    {
+        $username = 'admin*';
+        $filter = '(uid=%s)';
+        $expected = '(uid=admin\2a)';
+
+        $this->assertEquals($expected, $this->user->getLdapUserPattern($username, $filter));
     }
 
     public function testGetGroupUserFilter()

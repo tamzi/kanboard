@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../../Base.php';
+namespace KanboardTests\units\Core\Action;
 
+use KanboardTests\units\Base;
 use Kanboard\Core\Action\ActionManager;
 use Kanboard\Action\TaskAssignColorColumn;
 use Kanboard\Action\TaskClose;
@@ -212,7 +213,8 @@ class ActionManagerTest extends Base
         )));
 
         $actionManager->attachEvents();
-        $this->dispatcher->addListener(TaskModel::EVENT_CREATE, function () {});
+        $this->dispatcher->addListener(TaskModel::EVENT_CREATE, function () {
+        });
 
         $listeners = $this->dispatcher->getListeners(TaskModel::EVENT_CREATE);
         $this->assertCount(2, $listeners);

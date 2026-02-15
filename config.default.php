@@ -29,9 +29,6 @@ define('PLUGIN_API_URL', 'https://kanboard.org/plugins.json');
 // This is up to the Kanboard instance owner to validate if a plugin is legit.
 define('PLUGIN_INSTALLER', false);
 
-// Available cache drivers are "file" and "memory"
-define('CACHE_DRIVER', 'memory');
-
 // Cache folder to use if cache driver is "file" (must be writeable by the web server user)
 define('CACHE_DIR', DATA_DIR.DIRECTORY_SEPARATOR.'cache');
 
@@ -287,5 +284,14 @@ define('SHOW_GROUP_MEMBERSHIPS_IN_USERLIST', true);
 // If set to 0 ALL group-memberships will be listed (7 by default)
 define('SHOW_GROUP_MEMBERSHIPS_IN_USERLIST_WITH_LIMIT', 7);
 
-// Dashboard settings
+// Maximum number of projects displayed in the dashboard
 define('DASHBOARD_MAX_PROJECTS', 10);
+
+// Comma separated list of trusted proxy headers, for example: "HTTP_X_REAL_IP,HTTP_X_FORWARDED_FOR"
+define('TRUSTED_PROXY_HEADERS', '');
+
+// Comma separated list of trusted proxy IP networks (CIDR), for example: "192.168.0.0/16,10.0.0.0/8,::1/128"
+define('TRUSTED_PROXY_NETWORKS', '');
+
+// Allow private network access when fetching metadata for external links
+define('EXTERNAL_LINK_ALLOW_PRIVATE_NETWORKS', false);

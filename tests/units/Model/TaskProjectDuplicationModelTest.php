@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../Base.php';
+namespace KanboardTests\units\Model;
 
+use KanboardTests\units\Base;
 use Kanboard\Core\Security\Role;
 use Kanboard\Model\CategoryModel;
 use Kanboard\Model\ProjectModel;
@@ -40,8 +41,10 @@ class TaskProjectDuplicationModelTest extends Base
             'priority' => 3,
         )));
 
-        $this->container['dispatcher']->addListener(TaskModel::EVENT_CREATE_UPDATE, function () {});
-        $this->container['dispatcher']->addListener(TaskModel::EVENT_CREATE, function () {});
+        $this->container['dispatcher']->addListener(TaskModel::EVENT_CREATE_UPDATE, function () {
+        });
+        $this->container['dispatcher']->addListener(TaskModel::EVENT_CREATE, function () {
+        });
 
         // We duplicate our task to the 2nd project
         $this->assertEquals(2, $taskProjectDuplicationModel->duplicateToProject(1, 2));

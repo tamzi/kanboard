@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../Base.php';
+namespace KanboardTests\units\ExternalLink;
 
+use KanboardTests\units\Base;
 use Kanboard\ExternalLink\WebLink;
 
 class WebLinkTest extends Base
@@ -41,5 +42,20 @@ class WebLinkTest extends Base
             ->will($this->returnValue($html));
 
         $this->assertEquals('kanboard.org/something', $webLink->getTitle());
+    }
+
+    public function testGetTitleFromPrivateNetworkUrl()
+    {
+        $url = 'http://192.168.0.1/test';
+
+        $webLink = new WebLink($this->container);
+        $webLink->setUrl($url);
+        $this->assertEquals($url, $webLink->getUrl());
+
+        $this->container['httpClient']
+            ->expects($this->never())
+            ->method('get');
+
+        $this->assertEquals($url, $webLink->getTitle());
     }
 }

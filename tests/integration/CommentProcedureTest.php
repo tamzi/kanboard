@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/BaseProcedureTest.php';
+namespace KanboardTests\integration;
 
 use Kanboard\Core\Security\Role;
 
@@ -44,7 +44,7 @@ class CommentProcedureTest extends BaseProcedureTest
 
     public function assertUpdateComment()
     {
-        sleep(1); // Integration test fails because its too fast 
+        sleep(1); // Integration test fails because its too fast
         $this->assertTrue($this->app->execute('updateComment', array(
             'id' => $this->commentId,
             'content' => 'test',

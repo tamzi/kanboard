@@ -1,11 +1,12 @@
 <?php
 
+namespace KanboardTests\units\Job;
+
+use KanboardTests\units\Base;
 use Kanboard\Job\TaskFileEventJob;
 use Kanboard\Model\ProjectModel;
 use Kanboard\Model\TaskCreationModel;
 use Kanboard\Model\TaskFileModel;
-
-require_once __DIR__.'/../Base.php';
 
 class TaskFileEventJobTest extends Base
 {
@@ -19,7 +20,8 @@ class TaskFileEventJobTest extends Base
 
     public function testWithMissingFile()
     {
-        $this->container['dispatcher']->addListener(TaskFileModel::EVENT_CREATE, function() {});
+        $this->container['dispatcher']->addListener(TaskFileModel::EVENT_CREATE, function () {
+        });
 
         $taskFileEventJob = new TaskFileEventJob($this->container);
         $taskFileEventJob->execute(42, TaskFileModel::EVENT_CREATE);
@@ -30,7 +32,8 @@ class TaskFileEventJobTest extends Base
 
     public function testTriggerEvents()
     {
-        $this->container['dispatcher']->addListener(TaskFileModel::EVENT_CREATE, function() {});
+        $this->container['dispatcher']->addListener(TaskFileModel::EVENT_CREATE, function () {
+        });
 
         $taskFileModel = new TaskFileModel($this->container);
         $taskCreationModel = new TaskCreationModel($this->container);
