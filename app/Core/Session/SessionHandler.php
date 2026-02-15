@@ -51,14 +51,21 @@ class SessionHandler implements SessionHandlerInterface
     #[\ReturnTypeWillChange]
     public function read($sessionID)
     {
-        $result = $this->db->table(self::TABLE)->eq('id', $sessionID)->findOneColumn('data');
+        $result = $this->db->table(self::TABLE)->eq('id', $sessionID)->gt('expire_at', time())->findOneColumn('data');
+
+        // Note: Returning false display an error message and write() is never called
+        // preventing new sessions to be created when calling session_start()
         return $result ?: '';
     }
 
     #[\ReturnTypeWillChange]
     public function write($sessionID, $data)
     {
-        $lifetime = time() + (ini_get('session.gc_maxlifetime') ?: 1440);
+        if (SESSION_DURATION > 0) {
+            $lifetime = time() + SESSION_DURATION;
+        } else {
+            $lifetime = time() + (ini_get('session.gc_maxlifetime') ?: 1440);
+        }
 
         $this->db->startTransaction();
 

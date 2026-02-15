@@ -4,6 +4,7 @@ namespace Kanboard\Controller;
 
 use Kanboard\Core\Security\Role;
 use Kanboard\Notification\MailNotification;
+use Kanboard\Notification\WebNotification;
 
 /**
  * Class UserCreationController
@@ -23,6 +24,7 @@ class UserCreationController extends BaseController
     public function show(array $values = array(), array $errors = array())
     {
         $this->response->html($this->template->render('user_creation/show', array(
+            'themes' => $this->themeModel->getThemes(),
             'timezones' => $this->timezoneModel->getTimezones(true),
             'languages' => $this->languageModel->getLanguages(true),
             'roles' => $this->role->getApplicationRoles(),
@@ -66,8 +68,10 @@ class UserCreationController extends BaseController
                 $this->projectUserRoleModel->addUser($project_id, $user_id, Role::PROJECT_MEMBER);
             }
 
-            if (! empty($values['notifications_enabled'])) {
-                $this->userNotificationTypeModel->saveSelectedTypes($user_id, array(MailNotification::TYPE));
+            if ($this->configModel->get('notifications_enabled', 0) == 1) {
+                $this->userNotificationTypeModel->saveSelectedTypes($user_id, [MailNotification::TYPE, WebNotification::TYPE]);
+            } elseif (! empty($values['notifications_enabled'])) {
+                $this->userNotificationTypeModel->saveSelectedTypes($user_id, [MailNotification::TYPE]);
             }
 
             $this->flash->success(t('User created successfully.'));

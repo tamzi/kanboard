@@ -89,10 +89,10 @@ abstract class BaseController extends Base
      * @access protected
      * @return array
      * @throws PageNotFoundException
-     * @throws AccessForbiddenException
      */
     protected function getFile()
     {
+        $project_id = $this->request->getIntegerParam('project_id');
         $task_id = $this->request->getIntegerParam('task_id');
         $file_id = $this->request->getIntegerParam('file_id');
         $model = 'projectFileModel';
@@ -108,7 +108,11 @@ abstract class BaseController extends Base
         }
 
         if (isset($file['task_id']) && $file['task_id'] != $task_id) {
-            throw new AccessForbiddenException();
+            throw new PageNotFoundException();
+        }
+
+        if (isset($file['project_id']) && $file['project_id'] != $project_id) {
+            throw new PageNotFoundException();
         }
 
         $file['model'] = $model;
@@ -320,12 +324,15 @@ abstract class BaseController extends Base
      */
     protected function redirectAfterLogin()
     {
-        if (session_exists('redirectAfterLogin') && ! filter_var(session_get('redirectAfterLogin'), FILTER_VALIDATE_URL)) {
-            $redirect = session_get('redirectAfterLogin');
+        $redirectUri = $this->helper->url->to('DashboardController', 'show');
+
+        if (session_exists('redirectAfterLogin')) {
+            if ($this->request->isSafeRedirectUri(session_get('redirectAfterLogin'))) {
+                $redirectUri = session_get('redirectAfterLogin');
+            }
             session_remove('redirectAfterLogin');
-            $this->response->redirect($redirect);
-        } else {
-            $this->response->redirect($this->helper->url->to('DashboardController', 'show'));
         }
+
+        $this->response->redirect($redirectUri);
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../Base.php';
+namespace KanboardTests\units\Model;
 
+use KanboardTests\units\Base;
 use Kanboard\Model\ProjectFileModel;
 use Kanboard\Model\ProjectModel;
 
@@ -148,14 +149,12 @@ class ProjectFileTest extends Base
             ->method('generateThumbnailFromFile');
 
         $this->container['objectStorage']
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('moveUploadedFile')
-            ->with($this->equalTo('/tmp/phpYzdqkD'), $this->anything());
-
-        $this->container['objectStorage']
-            ->expects($this->at(1))
-            ->method('moveUploadedFile')
-            ->with($this->equalTo('/tmp/phpeEwEWG'), $this->anything());
+            ->withConsecutive(
+                ['/tmp/phpYzdqkD'],
+                ['/tmp/phpeEwEWG'],
+            );
 
         $this->assertTrue($fileModel->uploadFiles(1, $files));
 
@@ -232,7 +231,7 @@ class ProjectFileTest extends Base
         );
 
         $this->container['objectStorage']
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method('moveUploadedFile')
             ->with($this->equalTo('/tmp/phpYzdqkD'), $this->anything())
             ->will($this->throwException(new \Kanboard\Core\ObjectStorage\ObjectStorageException('test')));

@@ -373,8 +373,8 @@ class ProjectModel extends Base
      *
      * @access public
      * @param  array   $values Form values
-     * @param  integer $userId User who create the project
-     * @param  bool    $addUser Automatically add the user
+     * @param  integer $userId User who creates the project
+     * @param  bool    $addUser Whether to automatically add the user to the project
      * @return int     Project id
      */
     public function create(array $values, $userId = 0, $addUser = false)
@@ -594,27 +594,12 @@ class ProjectModel extends Base
     }
 
     /**
-     * Return the task count for a project
-     *
-     * @access public
-     * @param  integer    $project_id   Project id
-     * @return integer
-     */
-    public function taskCount($project_id)
-    {
-        return $this->db->table(self::TABLE)
-            ->eq('id', $project_id)->exists()
-            ->join(ColumnModel::TABLE, 'id', 'project_id')
-            ->count();
-    }
-
-    /**
      * Change usage of global tags
      *
      * @param  integer $project_id  Project id
      * @param  bool    $global_tags New global tag value
      * @return bool
-     */    
+     */
     public function changeGlobalTagUsage($project_id, $global_tags)
     {
         return $this->exists($project_id) &&

@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../Base.php';
+namespace KanboardTests\units\Model;
 
+use KanboardTests\units\Base;
 use Kanboard\Api\Procedure\ProjectPermissionProcedure;
 use Kanboard\Core\Security\Role;
 use Kanboard\Core\Translator;
@@ -27,7 +28,7 @@ class ProjectModelTest extends Base
 
     public function testCreationForAllLanguages()
     {
-        if ( 'odbc' === DB_DRIVER ) {
+        if ('odbc' === DB_DRIVER) {
             $this->markTestSkipped('Bug in pdo_odbc: <https://github.com/php/php-src/issues/9498>');
         }
 

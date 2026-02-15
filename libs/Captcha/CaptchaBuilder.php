@@ -133,14 +133,14 @@ class CaptchaBuilder implements CaptchaBuilderInterface
      */
     public $tempDir = 'temp/';
 
-    public function __construct($phrase = null, PhraseBuilderInterface $builder = null)
+    public function __construct($phrase = null, ?PhraseBuilderInterface $builder = null)
     {
         if ($builder === null) {
             $this->builder = new PhraseBuilder;
         } else {
             $this->builder = $builder;
         }
-        
+
         $this->phrase = is_string($phrase) ? $phrase : $this->builder->build($phrase);
     }
 
@@ -375,7 +375,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
     public function isOCRReadable()
     {
         if (!is_dir($this->tempDir)) {
-            @mkdir($this->tempDir, 0755, true);
+            @mkdir($this->tempDir, 0o755, true);
         }
 
         $tempj = $this->tempDir . uniqid('captcha', true) . '.jpg';
@@ -427,7 +427,7 @@ class CaptchaBuilder implements CaptchaBuilderInterface
                 $color = $this->backgroundColor;
                 $bg = imagecolorallocate($image, $color[0], $color[1], $color[2]);
             }
-            $this->background = $bg;
+            $this->backgroundColor = $bg;
             imagefill($image, 0, 0, $bg);
         } else {
             // use a random background image

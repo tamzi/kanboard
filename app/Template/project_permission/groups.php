@@ -22,7 +22,7 @@
                         'role' => $group['role'],
                         'id' => $group['id'],
                         'ariaLabel' => t('Role'),
-                        'url' => $this->url->to('ProjectPermissionController', 'changeGroupRole', array('project_id' => $project['id'])),
+                        'url' => $this->url->to('ProjectPermissionController', 'changeGroupRole', array('project_id' => $project['id'], 'csrf_token' => $this->app->getToken()->getReusableCSRFToken())),
                     )) ?>
                 </td>
                 <td>
@@ -37,7 +37,6 @@
     <div class="panel">
         <form method="post" action="<?= $this->url->href('ProjectPermissionController', 'addGroup', array('project_id' => $project['id'])) ?>" autocomplete="off" class="form-inline">
             <?= $this->form->csrf() ?>
-            <?= $this->form->hidden('project_id', array('project_id' => $project['id'])) ?>
             <?= $this->form->hidden('group_id', $values) ?>
             <?= $this->form->hidden('external_id', $values) ?>
 
@@ -58,4 +57,3 @@
         </form>
     </div>
 <?php endif ?>
-

@@ -1,3 +1,331 @@
+Version 1.2.50 (February 7, 2026)
+---------------------------------
+
+* test: bump phpunit version
+* fix: add missing authorization checks
+* fix: enforce plugin installer check in PluginController actions
+* fix: enable Parsedown safe mode for Markdown rendering
+* fix: add missing project authorization checks in controllers
+* fix: add CSRF protection for project role changes and enforce JSON content type
+* chore: use php-cs-fixer docker image in GitHub workflow instead of Composer
+* build(deps): bump pimple/pimple from 3.5.0 to 3.6.1
+
+Version 1.2.49 (January 6, 2026)
+--------------------------------
+
+* fix(ldap): ensure LDAP placeholders are escaped
+* fix: restore Ctrl+Enter submission on the task creation form
+* feat(locale): update translations
+* feat: prevent protocol-relative URL redirects after login
+* feat: block private network access for external web link (configurable)
+* feat: add `TRUSTED_PROXY_NETWORKS` config option
+* ci: add workflow to mirror GitHub repo to Codeberg
+* chore: remove outdated `tests/Dockerfile`
+* chore: regenerate autoload Composer files
+* build(deps): bump alpine from 3.22 to 3.23
+* build(deps): bump actions/upload-artifact from 4 to 6
+* build(deps): bump actions/checkout from 5 to 6
+
+Version 1.2.48 (October 18, 2025)
+--------------------------------
+
+* fix: handle Windows-style paths in `sanitize_path` function
+* feat(locale): added missing German translation phrases
+* feat(locale): added Arabic translation
+* feat(api): add board, rss and ical public links to the API response
+* feat: display sub-tasks completion in numbers (x/y) alongside percentage
+* feat: add basic support for right-to-left (RTL) languages
+* chore: update .gitattributes to ignore additional configuration files
+* build(deps): bump actions/setup-python from 5 to 6
+* build(deps): bump actions/checkout from 4 to 5
+
+Version 1.2.47 (August 11, 2025)
+--------------------------------
+
+* refactor: add namespace to test files
+* fix: the `$escape` parameter must be provided in PHP 8.4 for CSV functions
+* fix: sanitize and validate uploaded files path
+* fix: do not load `RememberMeAuth` provider when `REMEMBER_ME_AUTH` is `false`
+* fix: avoid PHP warning when external user creation is disabled
+* feat!: remove file cache driver to avoid using `unserialize()`
+* feat!: ignore legacy events serialized with PHP due to potential security issues
+* feat: add new actions: `TaskAssignCurrentUserColumnIfNoUserAlreadySet` and `TaskAssignToUserOnCreationInColumn`
+* feat: Add new `pdf()` method in `Core\Http\Response`
+* ci: run `php-cs-fixer` on GitHub Actions
+* ci: remove unnecessary labels from issue templates
+* chore: replace deprecated `gh-cli` feature source in devcontainer configuration
+
+Version 1.2.46 (June 22, 2025)
+------------------------------
+
+* refactor: update return type in filter apply methods
+* fix(security): prevent potential `Host` header injection via `SERVER_NAME`
+   -  You must specify the Kanboard application URL explicitly to generate correct URLs from email notifications. The default is `http://localhost/`.
+* fix: make various PHP 8.x compatibility changes
+* fix: avoid `Implicitly nullable parameter declarations` errors in PHP 8.4
+* feat: validate plugin archive URL before downloading
+* feat: use PHP 8.4 in the official Docker image
+* feat: show CAPTCHA on login form regardless of user existence
+* feat: add new option to enable notifications by default for new users
+* feat: add healthcheck endpoint `healthcheck.php`, and new Docker Compose files for MariaDB, Postgres, and SQLite
+* feat: add `TRUSTED_PROXY_HEADERS` config option
+    - If you use a reverse proxy, you can now specify which headers to trust for the client IP address. Nothing is trusted by default.
+* docs: add `CONTRIBUTING.md` file
+* ci(docker): avoid using `set-output` deprecated command
+* chore!: PHP 8.1 is now the minimum version supported
+    - **!! PHP 7.4 is no longer supported !!**
+* chore: update `docker-compose.yml` sample file to the latest specs
+* chore: remove obsolete `Vagrantfile`
+* build(deps): bump Alpine Docker image from 3.21 to 3.22
+
+Version 1.2.45 (May 12, 2025)
+-----------------------------
+
+* refactor: reuse existing helpers in tasks import form
+* fix(filter): handle `null` input in the `Lexer` class
+* fix(docker): legacy key/value format with whitespace separator should not be used
+* fix(api): allow and validate creator ID assignment in task creation
+* feat(routes): add `view` routes for project and task file browsing
+* feat(locale): update all language files using machine translation
+* feat(api): add priority fields to `createProject` and `updateProject` procedures
+* feat: allow attaching screenshots and files when creating a task
+* feat: add task title to overdue notification title
+* ci: replace GitHub Issue Markdown templates with YAML forms
+* ci: remove broken SQL Server unit tests pipeline
+* ci: improve pull request template
+* ci: add commit linter to validate conventional commit messages in pull requests
+
+Version 1.2.44 (March 21, 2025)
+-------------------------------
+
+* fix: prevent internal task titles from wrapping under the dropdown menu icon
+* feat(locale): update Greek and French translations
+* feat: display tag color squares next to their names in project and global settings
+* feat: enable bulk addition/removal of internal links
+* feat: provide an option to add tags without replacing existing ones during bulk operations
+
+Version 1.2.43 (December 18, 2024)
+----------------------------------
+
+* fix: verify the session hasn't expired before returning data
+* fix: avoid PHP 8.4 deprecation notices in third-party libraries
+* fix: avoid Composer warnings regarding PSR compatibility
+* feat(locale): add missing Brazilian Portuguese translations
+* ci: run GitHub Actions tests with `ubuntu-24.04`
+* chore: don't `export-ignore` the ChangeLog
+* build(deps): bump `symfony/service-contracts` from `2.5.3` to `2.5.4`
+* build(deps): bump `symfony/event-dispatcher-contracts` from `2.5.3` to `2.5.4`
+* build(deps): bump `symfony/deprecation-contracts` from `2.5.3` to `2.5.4`
+* build(deps): bump `alpine` from `3.20` to `3.21`
+
+Version 1.2.42 (November 10, 2024)
+----------------------------------
+
+* fix: validate translation filename before loading locales
+* fix: avoid path traversal in `FileStorage`
+* feat: add Peruvian Sol to the list of currencies
+* build(deps): bump `symfony/finder` from `5.4.43` to `5.4.45`
+* build(deps-dev): bump `symfony/stopwatch` from `5.4.40` to `5.4.45`
+
+Version 1.2.41 (October 25, 2024)
+---------------------------------
+
+* feat: add new plugin hooks in project forms
+* feat: add option to add BOM at the beginning of CSV files (required for Microsoft Excel)
+* feat: validate app config form values
+* feat: add cancel button on 2FA code validation screen
+* fix: add CSRF check to the logout endpoint
+* fix: add HTML escaping when displaying exception message
+* fix: add URL validation for external task links
+* fix: correct broken migration logic for Sqlite
+
+Version 1.2.40 (September 25, 2024)
+-----------------------------------
+
+* build(deps): bump symfony/finder from 5.4.42 to 5.4.43
+* chore: add php83-xmlwriter package to the Docker image
+* ci: update GitHub pull-request template
+* fix: avoid PHP error if no subtask in progress is found
+* fix: avoid potential XSS and HTML injection in comment replies
+* fix: prevent duplicated columns when enabling per-swimlane column task limits
+* fix(api): check comment visibility in API procedures
+* fix(api): verify comment ownership in API procedures
+* fix(mssql): escape identifiers in timesheet queries
+* fix(mssql): use ANSI OFFSET/FETCH syntax for pagination queries
+* fix(test): use explicit ORDER BY for queries returning multiple rows
+* test: add unit tests for Subtask Time Tracking query methods
+* test: ensure pagination produces correct chunks
+
+Version 1.2.39 (August 18, 2024)
+--------------------------------
+
+* fix: remove CSS which caused responsive issues on mobile
+* fix: incorrect template condition that set the username field to read only for remote users
+* fix: tasks count across swimlanes was incorrect
+* fix: avoid warning from libpng when loading PNG image with incorrect iCCP profiles
+* feat: improve column header task counts
+* feat: add `apple-mobile-web-app-capable` meta tag
+* build(deps): bump `symfony/finder` from `5.4.40` to `5.4.42`
+
+Version 1.2.38 (July 20, 2024)
+------------------------------
+
+* fix: avoid browser caching issue when showing file attachments
+* fix: comments visibility was not taken into consideration on event activities page
+* fix: send comment via email was broken due to missing comment visibility logic implemented in v1.2.36
+* feat(locale): update Greek translations
+* feat(locale): update Italian translations
+* build(deps): bump `symfony/console` from `5.4.40` to `5.4.41`
+* build(deps): bump `docker/build-push-action` from `5` to `6`
+
+Version 1.2.37 (June 5, 2024)
+-----------------------------
+
+* Add CSRF check and remove `project_id` form value for `addUser` and `addGroup` actions ([CVE-2024-36399](https://github.com/kanboard/kanboard/security/advisories/GHSA-x8v7-3ghx-65cv))
+* Update `symfony/*` dependencies
+* Update Docker image to Alpine 3.20
+* Update Russian and Hungarian translation
+* Add `color_id` argument to `createCategory` and `updateCategory` API procedures
+* Add link to create a comment before the list
+* Fix: unable to create comments with "c" shortcut or "Add a comment" menu
+
+Version 1.2.36 (May 2, 2024)
+----------------------------
+
+* Add comments visibility
+* Add explicit int casting to avoid PHP 8 TypeError when having empty automatic action parameters
+* Add new config option `DASHBOARD_MAX_PROJECTS`
+* Add reply feature to comments
+* Fix search bar layout when adding more buttons via third-party plugins
+* Introduce a Git hook to automatically update `version.txt` during Git checkout
+* Performance improvements:
+    * Don't count closed tasks when rendering the board
+    * Force the use of the cache when there is no custom roles
+* Use unique plugin name instead of plugin title for plugin registry logic
+* Update dependencies
+
+Version 1.2.35 (February 2, 2024)
+---------------------------------
+
+* Add missing HTML escaping when showing group membership in user profile ([CVE-2024-22720](https://github.com/kanboard/kanboard/security/advisories/GHSA-8p3h-v7fc-xppj))
+* Update Dutch translation
+* Update Bulgarian translation
+* Bump `phpunit/phpunit` from `9.6.15` to `9.6.16`
+* Bump `symfony/console` from `5.4.32` to `5.4.34`
+
+Version 1.2.34 (December 13, 2023)
+----------------------------------
+
+* Upgrade Docker image to Alpine 3.19 and PHP 8.3
+* API: Avoid PHP notice when searching for a project name that does not exist
+* Update Bulgarian translation
+* Bump `symfony/console` from `5.4.28` to `5.4.32`
+* Bump `phpunit/phpunit` from `9.6.13` to `9.6.15`
+
+Version 1.2.33 (October 15, 2023)
+---------------------------------
+
+* Do not close modals when clicking on the background
+* Add Bulgarian translation
+* Update Ukrainian and Russian translations
+* Show the two factor form in the middle of the screen like the login form does
+* Do not override the `creator_id` with the current logged user if the task is imported
+* Add basic Dev Container configs
+* Add adaptive SVG favicon and more SVG variants:
+    * See https://web.dev/building-an-adaptive-favicon/
+    * Added more variant of the original Inkscape icon:
+        - Text SVG
+        - Vectorized text path SVG
+        - Optimized SVG icon
+* Remove `project_id` from task links (A few were missed in #4892)
+* Remove unused and invalid method in `ProjectModel`
+* Update `phpunit/phpunit` and `symfony/*` dependencies
+* Update vendor folder
+
+Version 1.2.32 (July 11, 2023)
+------------------------------
+
+* Fix unexpected EventDispatcher exception in cronjob and during logout
+* Integration Tests: Run `apt update` before installing Apache
+* Automatic action `TaskMoveColumnClosed` does not log column movement
+* Tweak Sqlite connection settings to reduce database locked errors
+* Bump `phpunit/phpunit` from `9.6.9` to `9.6.10`
+
+Version 1.2.31 (July 3, 2023)
+-----------------------------
+
+Security Fixes:
+
+- [CVE-2023-36813: Avoid potential SQL injections without breaking compatibility with plugins](https://github.com/kanboard/kanboard/security/advisories/GHSA-9gvq-78jp-jxcx)
+
+Other fixes and updates:
+
+- Run tests with PHP 8 on GitHub Actions
+- Bump Symfony dependencies
+- Update Composer dependencies to be able to run tests with PHP 8.2
+- Add `/usr/bin/php` symlink in the Docker image
+- Replace usage of `at()` matcher with alternatives in unit tests
+- Adjust plugin directory test case to work on released versions
+- Fix incorrect background dynamic property in captcha library
+- Update translations
+
+Version 1.2.30 (June 2, 2023)
+-----------------------------
+
+Security Fixes:
+
+- [CVE-2023-33956: Parameter based Indirect Object Referencing leading to private file exposure](https://github.com/kanboard/kanboard/security/advisories/GHSA-r36m-44gg-wxg2)
+- [CVE-2023-33968: Missing access control allows user to move and duplicate tasks to any project in the software](https://github.com/kanboard/kanboard/security/advisories/GHSA-gf8r-4p6m-v8vr)
+- [CVE-2023-33969: Stored XSS in the Task External Link Functionality](https://github.com/kanboard/kanboard/security/advisories/GHSA-8qvf-9847-gpc9)
+- [CVE-2023-33970: Missing access control in internal task links feature](https://github.com/kanboard/kanboard/security/advisories/GHSA-wfch-8rhv-v286)
+
+Other Fixes:
+
+- Avoid PHP warning caused by `session_regenerate_id()`
+- Avoid CSS issue when upgrading to v1.2.29 without flushing user sessions
+
+Version 1.2.29 (May 23, 2023)
+-----------------------------
+
+* Avoid potential clipboard based cross-site scripting ([CVE-2023-32685](https://github.com/kanboard/kanboard/security/advisories/GHSA-hjmw-gm82-r4gv))
+* Upgrade Docker image to PHP 8.2 and Alpine 3.18
+* Add themes support: dark, light and automatic mode
+* Fix broken "Hide this Column" feature
+* Do not close modals when clicking on the background if the form has changed
+* Fix incorrect route for "My Activity Stream"
+* Fix incorrect parameter encoding when using URLs rewriting
+* Add support for task links in Markdown headings
+* Handle 413 responses from Nginx when uploading files too large
+* Restore all previously loaded translations when sending user notifications
+* Regenerate session ID after successful authentication
+* Use `SESSION_DURATION` option to define the session lifetime stored in the database
+    - The option `SESSION_DURATION` is used to define the cookie lifetime.
+    - With this change, Kanboard will try to use first `SESSION_DURATION` instead of the
+    default `session.gc_maxlifetime` value.
+* Bump `phpunit/phpunit` from `9.6.6` to `9.6.8`
+
+Version 1.2.28 (April 8, 2023)
+------------------------------
+
+* Trigger `EVENT_MOVE_COLUMN` event when moving task to another swimlane
+* Allow moving closed tasks when using the API
+* Duplicate external links when duplicating tasks
+* Add support for comparison operator to priority filter
+* Prevents users to convert subtaks to tasks when custom role does not allow it
+* Avoid deprecation messages when sending an email with PHP 8.2
+* Declare most common routes to have nice URLs
+* Improve wording of bulk action modal to move tasks position
+* Allow closing modals by clicking on the background
+* Improve wording of the menu to close all tasks in a given column/swimlane
+* Fix bug that prevent reordering subtasks after changing the status
+* Bump version of `phpunit/phpunit`, `symfony/stopwatch`, and `symfony/finder`
+* Use `GITHUB_TOKEN` instead of a personal token to run GitHub Actions
+* Duplicate attachments & external links during task duplication & importing
+* Move Docker image to run automated tests to GitHub Registry
+* Push Docker images to an additional registry Quay.io (RedHat)
+* Use the appropriate config for the start column in user iCal export
+* Improved translations
+
 Version 1.2.27 (March 5, 2023)
 ------------------------------
 
@@ -196,7 +524,7 @@ Version 1.2.16 (October 9, 2020)
 * Add ARIA label to user mention
 * Add ARIA label to letter avatars
 * Add ARIA label to project select role without label
-* Add ARIA label to dropdown autocomplete without label 
+* Add ARIA label to dropdown autocomplete without label
 * Add ARIA label to form text editor without label
 * Add ARIA label to icons with title attributes
 * Add ARIA label for form inputs without labels
@@ -290,8 +618,8 @@ Version 1.2.13 (December 15, 2019)
 * Change string indexing from {0} to [0] (deprecated in PHP 7.4)
 * Update translations
 
-Version 1.2.12 (Oct 26, 2019)
------------------------------
+Version 1.2.12 (October 26, 2019)
+---------------------------------
 
 * Update Docker image to Alpine Linux 3.10.3
 * Add new template hook: "template:project-permission:after-adduser"
@@ -312,8 +640,8 @@ Version 1.2.12 (Oct 26, 2019)
 * Changes filters from in array to subqueries
 * Add hash to image URL to force browser to update avatar image when changed
 
-Version 1.2.11 (Aug 24, 2019)
------------------------------
+Version 1.2.11 (August 24, 2019)
+--------------------------------
 
 Breaking Changes:
 
@@ -823,8 +1151,8 @@ Breaking Changes:
 
 * Remove method getQrCodeUrl() from PostAuthenticationProviderInterface
 
-Version 1.0.40 (Feb 24 2017)
-----------------------------
+Version 1.0.40 (February 24, 2017)
+----------------------------------
 
 New features:
 
@@ -873,8 +1201,8 @@ Those issues are harmless if you use default Kanboard settings for CSP rules:
 * Avoid potential XSS in project overview when listing users
 * Avoid potential XSS in Gantt chart
 
-Version 1.0.39 (Feb 12, 2017)
------------------------------
+Version 1.0.39 (February 12, 2017)
+----------------------------------
 
 Improvements:
 
@@ -901,8 +1229,8 @@ Bug fixes:
 * Fix broken subtask restriction per user
 * Fix CFD chart (stack wrongly ordered)
 
-Version 1.0.38 (Jan 28, 2017)
------------------------------
+Version 1.0.38 (January 28, 2017)
+----------------------------------
 
 New features:
 
@@ -936,8 +1264,8 @@ Bug fixes:
 * Fix wrong default value for add group member modal
 * Add missing filter (completed) for task search
 
-Version 1.0.37 (Jan 14, 2017)
------------------------------
+Version 1.0.37 (January 14, 2017)
+---------------------------------
 
 Improvements:
 
@@ -964,8 +1292,8 @@ Bug fixes:
 
 * Closing screenshot dialog prevent input elements to get focus
 
-Version 1.0.36 (Dec 30, 2016)
------------------------------
+Version 1.0.36 (December 30, 2016)
+----------------------------------
 
 New features:
 
@@ -990,8 +1318,8 @@ Bug fixes:
 * Fix wrong controller name on project activity page when using filters
 * Uploaded avatar images are now visible in public board view
 
-Version 1.0.35 (Dec 4, 2016)
-----------------------------
+Version 1.0.35 (December 4, 2016)
+---------------------------------
 
 New features:
 
@@ -1024,8 +1352,8 @@ Bug fixes:
 * Fix link generation when user mention is followed by a punctuation mark
 * Make user mentions works again
 
-Version 1.0.34 (Oct 11, 2016)
------------------------------
+Version 1.0.34 (October 11, 2016)
+---------------------------------
 
 New features:
 
@@ -1056,8 +1384,8 @@ Bug fixes:
 * Do not show closed tasks in task move position form
 * Avoid "Controller not found" in Settings > Links
 
-Version 1.0.33 (Sep 5, 2016)
-----------------------------
+Version 1.0.33 (September 5, 2016)
+----------------------------------
 
 New features:
 
@@ -1140,8 +1468,8 @@ Bug fixes:
 * Fixed Markdown editor auto-grow on the task form (Safari)
 * Fixed compatibility issue with PHP 5.3 for OAuthUserProvider class
 
-Version 1.0.31 (Jul 3, 2016)
-----------------------------
+Version 1.0.31 (July 3, 2016)
+-----------------------------
 
 New features:
 
@@ -1178,8 +1506,8 @@ Breaking changes:
 
 * Docker volume paths are changed to /var/www/app/{data,plugins}
 
-Version 1.0.30 (Jun 8, 2016)
-----------------------------
+Version 1.0.30 (June 8, 2016)
+-----------------------------
 
 Improvements:
 
@@ -1191,8 +1519,8 @@ Bug fixes:
 * Fixed plural form in alert message
 * Fixed CSS cosmetic issue with popover and tooltips
 
-Version 1.0.29 (Jun 5, 2016)
-----------------------------
+Version 1.0.29 (June 5, 2016)
+-----------------------------
 
 New features:
 
@@ -1276,8 +1604,8 @@ Bug fixes:
 * Fixed form submission with Meta+Enter keyboard shortcut
 * Removed PHP notices in comment suppression view
 
-Version 1.0.27 (Mar 27, 2016)
------------------------------
+Version 1.0.27 (March 27, 2016)
+-------------------------------
 
 New features:
 
@@ -1321,8 +1649,8 @@ Bug fixes:
 * Fix invalid user filter for API procedure createLdapUser()
 * Ambiguous column name with very old version of Sqlite
 
-Version 1.0.26 (Feb 28, 2016)
------------------------------
+Version 1.0.26 (February 28, 2016)
+----------------------------------
 
 Breaking changes:
 
@@ -1354,8 +1682,8 @@ Bug fixes:
 * Fix filter dropdown not accessible when there are too many items
 * Fix regression: unable to change project in "task move/duplicate to another project"
 
-Version 1.0.25 (Feb 7, 2016)
-----------------------------
+Version 1.0.25 (February 7, 2016)
+---------------------------------
 
 Breaking changes:
 
@@ -1401,8 +1729,8 @@ Bug fixes:
 * Category label is broken on the board if there's a url in the description
 * Fix pagination on task time tracking page
 
-Version 1.0.24 (Jan 23, 2016)
------------------------------
+Version 1.0.24 (January 23, 2016)
+---------------------------------
 
 New features:
 
@@ -1443,8 +1771,8 @@ Bug fixes:
 * Unable to unassign a task from the API
 * Revert back previous optimizations of TaskPosition (incompatibility with some environment)
 
-Version 1.0.23 (Jan 9, 2016)
-----------------------------
+Version 1.0.23 (January 9, 2016)
+--------------------------------
 
 Breaking changes:
 
@@ -1478,8 +1806,8 @@ Bug fixes:
 * Fix pagination in group members listing
 * Avoid PHP error when enabling LDAP group provider with PHP < 5.5
 
-Version 1.0.22 (Dec 13, 2015)
------------------------------
+Version 1.0.22 (December 13, 2015)
+----------------------------------
 
 Breaking changes:
 
@@ -1508,8 +1836,8 @@ New features:
 * Add capability to reopen Gitlab issues
 * Try to load config.php from /data if not available
 
-Version 1.0.21 (Nov 22, 2015)
------------------------------
+Version 1.0.21 (November 22, 2015)
+----------------------------------
 
 Breaking changes:
 
@@ -1547,8 +1875,8 @@ Bug fixes:
 * Make CSV export compatible with PHP 5.3
 * Avoid Safari to append .html at the end of downloaded files
 
-Version 1.0.20 (Oct 24, 2015)
------------------------------
+Version 1.0.20 (October 24, 2015)
+---------------------------------
 
 Breaking changes:
 
@@ -1574,8 +1902,8 @@ Bug fixes:
 * People should not see any tasks during a search when they are not associated to a project
 * Avoid disabling the default swimlane during renaming when there is no other activated swimlane
 
-Version 1.0.19 (Oct 11, 2015)
------------------------------
+Version 1.0.19 (October 11, 2015)
+---------------------------------
 
 New features:
 
@@ -1638,8 +1966,8 @@ Bug fixes:
 * Fix Postgres issue "Cardinality violation" when there is multiple "is_milestone_of" links
 * Fix issue with due date greater than year 2038
 
-Version 1.0.18 (Aug 30, 2015)
------------------------------
+Version 1.0.18 (August 30, 2015)
+--------------------------------
 
 New features:
 
@@ -1685,8 +2013,8 @@ Bug fixes:
 * Fix screenshot feature with Firefox 40
 * Fix bug when uploading files with Cyrilic characters
 
-Version 1.0.17 (Jul 27, 2015)
------------------------------
+Version 1.0.17 (July 27, 2015)
+------------------------------
 
 New features:
 

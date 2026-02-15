@@ -1,8 +1,8 @@
 <?php
 
-// PHP 7.4.0 minimum
-if (version_compare(PHP_VERSION, '7.4.0', '<')) {
-    throw new Exception('This software requires PHP 7.4.0 minimum');
+// PHP 8.1.0 minimum
+if (version_compare(PHP_VERSION, '8.1.0', '<')) {
+    throw new Exception('This software requires PHP 8.1.0 minimum');
 }
 
 // Check data folder if sqlite
@@ -41,4 +41,9 @@ foreach (array('gd', 'mbstring', 'hash', 'openssl', 'json', 'hash', 'ctype', 'fi
 // Fix wrong value for arg_separator.output, used by the function http_build_query()
 if (ini_get('arg_separator.output') === '&amp;') {
     ini_set('arg_separator.output', '&');
+}
+
+// Check Reverse Proxy Authentication settings
+if (REVERSE_PROXY_AUTH && empty(TRUSTED_PROXY_NETWORKS)) {
+    throw new Exception('REVERSE_PROXY_AUTH is enabled but TRUSTED_PROXY_NETWORKS is not configured');
 }

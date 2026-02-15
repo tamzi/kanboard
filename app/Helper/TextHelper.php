@@ -33,7 +33,9 @@ class TextHelper extends Base
      */
     public function implode($glue, array $list)
     {
-        array_walk($list, function (&$value) { $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false); });
+        array_walk($list, function (&$value) {
+            $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false);
+        });
         return implode($glue, $list);
     }
 
@@ -47,9 +49,26 @@ class TextHelper extends Base
     public function markdown($text, $isPublicLink = false)
     {
         $parser = new Markdown($this->container, $isPublicLink);
+        $parser->setSafeMode(true);
         $parser->setMarkupEscaped(MARKDOWN_ESCAPE_HTML);
         $parser->setBreaksEnabled(true);
         return $parser->text($text ?: '');
+    }
+
+    /**
+     * Reply transformation
+     *
+     * @param  string   $username
+     * @param  string   $text
+     * @return string
+     */
+    public function reply($username, $text)
+    {
+        $res = t('%s wrote: ', $username).PHP_EOL.'> ';
+
+        $lines = preg_split("/\r\n|\n|\r/", $text);
+
+        return $res.implode(PHP_EOL.'> ', $lines);
     }
 
     /**

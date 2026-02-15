@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/BaseProcedureTest.php';
+namespace KanboardTests\integration;
 
 class ProcedureAuthorizationTest extends BaseProcedureTest
 {
@@ -239,7 +239,7 @@ class ProcedureAuthorizationTest extends BaseProcedureTest
         $taskId = $this->manager->createTask('My Task', $projectId);
         $this->assertNotFalse($taskId);
 
-        $commentId = $this->manager->createComment($taskId, $this->userUserId, 'My comment');
+        $commentId = $this->manager->createComment($taskId, $this->managerUserId, 'My comment');
         $this->assertNotFalse($commentId);
 
         $this->expectException('JsonRPC\Exception\AccessDeniedException');

@@ -73,36 +73,63 @@ class TaskProcedure extends BaseProcedure
 
     public function moveTaskPosition($project_id, $task_id, $column_id, $position, $swimlane_id)
     {
+        TaskAuthorization::getInstance($this->container)->check($this->getClassName(), 'moveTaskPosition', $task_id);
+        $taskProjectId = $this->taskFinderModel->getProjectId($task_id);
+
+        if ($taskProjectId !== (int) $project_id) {
+            return false;
+        }
+
         ProjectAuthorization::getInstance($this->container)->check($this->getClassName(), 'moveTaskPosition', $project_id);
-        return $this->taskPositionModel->movePosition($project_id, $task_id, $column_id, $position, $swimlane_id);
+        return $this->taskPositionModel->movePosition($project_id, $task_id, $column_id, $position, $swimlane_id, true, false);
     }
 
     public function moveTaskToProject($task_id, $project_id, $swimlane_id = null, $column_id = null, $category_id = null, $owner_id = null)
     {
+        TaskAuthorization::getInstance($this->container)->check($this->getClassName(), 'moveTaskToProject', $task_id);
         ProjectAuthorization::getInstance($this->container)->check($this->getClassName(), 'moveTaskToProject', $project_id);
         return $this->taskProjectMoveModel->moveToProject($task_id, $project_id, $swimlane_id, $column_id, $category_id, $owner_id);
     }
 
     public function duplicateTaskToProject($task_id, $project_id, $swimlane_id = null, $column_id = null, $category_id = null, $owner_id = null)
     {
+        TaskAuthorization::getInstance($this->container)->check($this->getClassName(), 'duplicateTaskToProject', $task_id);
         ProjectAuthorization::getInstance($this->container)->check($this->getClassName(), 'duplicateTaskToProject', $project_id);
         return $this->taskProjectDuplicationModel->duplicateToProject($task_id, $project_id, $swimlane_id, $column_id, $category_id, $owner_id);
     }
 
-    public function createTask($title, $project_id, $color_id = '', $column_id = 0, $owner_id = 0, $creator_id = 0,
-                               $date_due = '', $description = '', $category_id = 0, $score = 0, $swimlane_id = null, $priority = 0,
-                               $recurrence_status = 0, $recurrence_trigger = 0, $recurrence_factor = 0, $recurrence_timeframe = 0,
-                               $recurrence_basedate = 0, $reference = '', array $tags = array(), $date_started = '',
-                               $time_spent = null, $time_estimated = null)
-    {
+    public function createTask(
+        $title,
+        $project_id,
+        $color_id = '',
+        $column_id = 0,
+        $owner_id = 0,
+        $creator_id = 0,
+        $date_due = '',
+        $description = '',
+        $category_id = 0,
+        $score = 0,
+        $swimlane_id = null,
+        $priority = 0,
+        $recurrence_status = 0,
+        $recurrence_trigger = 0,
+        $recurrence_factor = 0,
+        $recurrence_timeframe = 0,
+        $recurrence_basedate = 0,
+        $reference = '',
+        array $tags = array(),
+        $date_started = '',
+        $time_spent = null,
+        $time_estimated = null
+    ) {
         ProjectAuthorization::getInstance($this->container)->check($this->getClassName(), 'createTask', $project_id);
 
         if ($owner_id !== 0 && ! $this->projectPermissionModel->isAssignable($project_id, $owner_id)) {
             return false;
         }
 
-        if ($this->userSession->isLogged()) {
-            $creator_id = $this->userSession->getId();
+        if ($creator_id !== 0 && ! $this->projectPermissionModel->isAssignable($project_id, $creator_id)) {
+            return false;
         }
 
         $values = array(
@@ -135,12 +162,27 @@ class TaskProcedure extends BaseProcedure
         return $valid ? $this->taskCreationModel->create($values) : false;
     }
 
-    public function updateTask($id, $title = null, $color_id = null, $owner_id = null,
-                               $date_due = null, $description = null, $category_id = null, $score = null, $priority = null,
-                               $recurrence_status = null, $recurrence_trigger = null, $recurrence_factor = null,
-                               $recurrence_timeframe = null, $recurrence_basedate = null, $reference = null, $tags = null, $date_started = null,
-                               $time_spent = null, $time_estimated = null)
-    {
+    public function updateTask(
+        $id,
+        $title = null,
+        $color_id = null,
+        $owner_id = null,
+        $date_due = null,
+        $description = null,
+        $category_id = null,
+        $score = null,
+        $priority = null,
+        $recurrence_status = null,
+        $recurrence_trigger = null,
+        $recurrence_factor = null,
+        $recurrence_timeframe = null,
+        $recurrence_basedate = null,
+        $reference = null,
+        $tags = null,
+        $date_started = null,
+        $time_spent = null,
+        $time_estimated = null
+    ) {
         TaskAuthorization::getInstance($this->container)->check($this->getClassName(), 'updateTask', $id);
         $project_id = $this->taskFinderModel->getProjectId($id);
 

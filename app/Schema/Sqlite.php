@@ -8,12 +8,21 @@ use Kanboard\Core\Security\Token;
 use Kanboard\Core\Security\Role;
 use PDO;
 
-const VERSION = 126;
+const VERSION = 128;
 
+function version_128(PDO $pdo)
+{
+    $pdo->exec("ALTER TABLE comments ADD COLUMN visibility VARCHAR(25) NOT NULL DEFAULT '".Role::APP_USER."'");
+}
+
+function version_127(PDO $pdo)
+{
+    $pdo->exec("ALTER TABLE users ADD COLUMN theme TEXT DEFAULT 'light' NOT NULL");
+}
 
 function version_126(PDO $pdo)
 {
-	$pdo->exec('ALTER TABLE subtask_time_tracking RENAME TO subtask_time_tracking_old');
+    $pdo->exec('ALTER TABLE subtask_time_tracking RENAME TO subtask_time_tracking_old');
     
     $pdo->exec('
         CREATE TABLE subtask_time_tracking (
@@ -28,8 +37,8 @@ function version_126(PDO $pdo)
         )
     ');
     
-    $pdo->exec('DROP INDEX subtasks_task_idx');    
-    $pdo->exec('CREATE INDEX subtasks_task_idx ON subtasks(task_id)'); 
+    $pdo->exec('DROP INDEX subtasks_task_idx');
+    $pdo->exec('CREATE INDEX subtasks_task_idx ON subtasks(task_id)');
     $pdo->exec('INSERT INTO subtask_time_tracking SELECT * FROM subtask_time_tracking_old');
     $pdo->exec('DROP TABLE subtask_time_tracking_old');
 }
@@ -329,7 +338,8 @@ function version_98(PDO $pdo)
 {
     $pdo->exec('ALTER TABLE files RENAME TO task_has_files');
 
-    $pdo->exec("
+    $pdo->exec(
+        "
         CREATE TABLE project_has_files (
             id INTEGER PRIMARY KEY,
             project_id INTEGER NOT NULL,
@@ -436,7 +446,7 @@ function version_91(PDO $pdo)
 
         if ($row['is_admin'] == 1) {
             $role = Role::APP_ADMIN;
-        } else if ($row['is_project_admin']) {
+        } elseif ($row['is_project_admin']) {
             $role = Role::APP_MANAGER;
         }
 
@@ -463,12 +473,12 @@ function version_90(PDO $pdo)
     $rq->execute();
     $rows = $rq->fetchAll(PDO::FETCH_ASSOC) ?: array();
 
-    $rq = $pdo->prepare('UPDATE project_has_users SET "role"=? WHERE "id"=?');
+    $rq = $pdo->prepare('UPDATE project_has_users SET "role"=? WHERE "user_id"=?');
 
     foreach ($rows as $row) {
         $rq->execute(array(
             $row['is_owner'] == 1 ? Role::PROJECT_MANAGER : Role::PROJECT_MEMBER,
-            $row['id'],
+            $row['user_id'],
         ));
     }
 }
@@ -1291,7 +1301,8 @@ function version_19(PDO $pdo)
 
 function version_18(PDO $pdo)
 {
-    $pdo->exec("
+    $pdo->exec(
+        "
         CREATE TABLE task_has_subtasks (
             id INTEGER PRIMARY KEY,
             title TEXT COLLATE NOCASE NOT NULL,
@@ -1307,7 +1318,8 @@ function version_18(PDO $pdo)
 
 function version_17(PDO $pdo)
 {
-    $pdo->exec("
+    $pdo->exec(
+        "
         CREATE TABLE task_has_files (
             id INTEGER PRIMARY KEY,
             name TEXT COLLATE NOCASE NOT NULL,
@@ -1321,7 +1333,8 @@ function version_17(PDO $pdo)
 
 function version_16(PDO $pdo)
 {
-    $pdo->exec("
+    $pdo->exec(
+        "
         CREATE TABLE project_has_categories (
             id INTEGER PRIMARY KEY,
             name TEXT COLLATE NOCASE NOT NULL,

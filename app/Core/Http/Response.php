@@ -291,14 +291,15 @@ class Response extends Base
      * Send a CSV response
      *
      * @access public
-     * @param  array  $data  Data to serialize in csv
+     * @param  array  $data    Data to serialize in csv
+     * @param  bool   $addBOM  Add BOM header
      */
-    public function csv(array $data)
+    public function csv(array $data, $addBOM = false)
     {
         $this->withoutCache();
         $this->withContentType('text/csv; charset=utf-8');
         $this->send();
-        Csv::output($data);
+        Csv::output($data, $addBOM);
     }
 
     /**
@@ -391,6 +392,27 @@ class Response extends Base
     {
         $this->withStatusCode($statusCode);
         $this->withContentType('text/calendar; charset=utf-8');
+        $this->withBody($data);
+        $this->send();
+    }
+
+    /**
+     * Send a PDF response
+     *
+     * @access public
+     * @param  string  $data
+     * @param  integer $statusCode
+     * @param  string  $fileName
+     */
+    public function pdf($data, int $statusCode = 200, string $fileName = "")
+    {
+        $this->withStatusCode($statusCode);
+        $this->withContentType('application/pdf');
+
+        if (!empty($fileName)) {
+            $this->httpHeaders["content-disposition"] = "attachment; filename=".$fileName;
+        }
+
         $this->withBody($data);
         $this->send();
     }

@@ -8,7 +8,17 @@ use PDO;
 use Kanboard\Core\Security\Token;
 use Kanboard\Core\Security\Role;
 
-const VERSION = 115;
+const VERSION = 117;
+
+function version_117(PDO $pdo)
+{
+    $pdo->exec('ALTER TABLE "comments" ADD COLUMN "visibility" VARCHAR(25) NOT NULL DEFAULT \''.Role::APP_USER."'");
+}
+
+function version_116(PDO $pdo)
+{
+    $pdo->exec("ALTER TABLE users ADD COLUMN theme TEXT DEFAULT 'light' NOT NULL");
+}
 
 function version_115(PDO $pdo)
 {
@@ -284,7 +294,8 @@ function version_86(PDO $pdo)
 {
     $pdo->exec('ALTER TABLE files RENAME TO task_has_files');
 
-    $pdo->exec("
+    $pdo->exec(
+        "
         CREATE TABLE project_has_files (
             id SERIAL PRIMARY KEY,
             project_id INTEGER NOT NULL,
@@ -401,7 +412,7 @@ function version_77(PDO $pdo)
 
         if ($row['is_admin'] == 1) {
             $role = Role::APP_ADMIN;
-        } else if ($row['is_project_admin']) {
+        } elseif ($row['is_project_admin']) {
             $role = Role::APP_MANAGER;
         }
 

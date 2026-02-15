@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../../Base.php';
+namespace KanboardTests\units\Core\Http;
 
+use KanboardTests\units\Base;
 use Kanboard\Core\Http\Route;
 use Kanboard\Core\Http\Router;
 use Kanboard\Core\Http\Request;
@@ -44,7 +45,9 @@ class RouterTest extends Base
 
     public function testDispatcherWithNoUrlRewrite()
     {
-        $this->container['request'] = new Request($this->container, array(
+        $this->container['request'] = new Request(
+            $this->container,
+            array(
                 'PHP_SELF' => '/kanboard/index.php',
                 'REQUEST_URI' => '/kanboard/?controller=FakeController&action=myAction&myvar=value1',
                 'QUERY_STRING' => 'controller=FakeController&action=myAction&myvar=value1',
@@ -68,7 +71,9 @@ class RouterTest extends Base
 
     public function testDispatcherWithNoUrlRewriteAndPlugin()
     {
-        $this->container['request'] = new Request($this->container, array(
+        $this->container['request'] = new Request(
+            $this->container,
+            array(
                 'PHP_SELF' => '/kanboard/index.php',
                 'REQUEST_URI' => '/kanboard/?controller=FakeController&action=myAction&myvar=value1&plugin=myplugin',
                 'QUERY_STRING' => 'controller=FakeController&action=myAction&myvar=value1&plugin=myplugin',
@@ -93,7 +98,9 @@ class RouterTest extends Base
 
     public function testDispatcherWithUrlRewrite()
     {
-        $this->container['request'] = new Request($this->container, array(
+        $this->container['request'] = new Request(
+            $this->container,
+            array(
                 'PHP_SELF' => '/kanboard/index.php',
                 'REQUEST_URI' => '/kanboard/my/route/123?myvar=value1',
                 'QUERY_STRING' => 'myvar=value1',
@@ -120,7 +127,9 @@ class RouterTest extends Base
 
     public function testDispatcherWithUrlRewriteWithPlugin()
     {
-        $this->container['request'] = new Request($this->container, array(
+        $this->container['request'] = new Request(
+            $this->container,
+            array(
                 'PHP_SELF' => '/kanboard/index.php',
                 'REQUEST_URI' => '/kanboard/my/plugin/route/123?myvar=value1',
                 'QUERY_STRING' => 'myvar=value1',

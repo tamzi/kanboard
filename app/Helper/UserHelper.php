@@ -12,6 +12,11 @@ use Kanboard\Core\Base;
  */
 class UserHelper extends Base
 {
+    public function getTheme()
+    {
+        return $this->userSession->getTheme();
+    }
+
     /**
      * Return subtask list toggle value
      *
@@ -98,6 +103,17 @@ class UserHelper extends Base
     }
 
     /**
+     * Get role
+     *
+     * @access public
+     * @return string
+     */
+    public function getRole()
+    {
+        return $this->userSession->getRole();
+    }
+
+    /**
      * Get role name
      *
      * @access public
@@ -123,7 +139,7 @@ class UserHelper extends Base
         $total = count($groupsList);
 
         if ($total > 0 && SHOW_GROUP_MEMBERSHIPS_IN_USERLIST_WITH_LIMIT > 0) {
-            $limitedList = array_slice($groupsList, 0 , SHOW_GROUP_MEMBERSHIPS_IN_USERLIST_WITH_LIMIT);
+            $limitedList = array_slice($groupsList, 0, SHOW_GROUP_MEMBERSHIPS_IN_USERLIST_WITH_LIMIT);
         }
 
         return [

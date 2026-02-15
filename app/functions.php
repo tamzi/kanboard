@@ -68,7 +68,9 @@ function session_flush()
 function explode_csv_field($str)
 {
     $fields = explode(',', $str);
-    array_walk($fields, function (&$value) { $value = trim($value); });
+    array_walk($fields, function (&$value) {
+        $value = trim($value);
+    });
     return array_filter($fields);
 }
 
@@ -198,7 +200,7 @@ function build_app_version($ref, $commit_hash)
 
     if ($commit_hash !== '$Format:%H$') {
         return 'main.'.$commit_hash;
-    } else if (file_exists(__DIR__ . '/version.txt')) {
+    } elseif (file_exists(__DIR__ . '/version.txt')) {
         return rtrim(file_get_contents(__DIR__ . '/version.txt'));
     }
 
@@ -243,8 +245,10 @@ function convert_php_size_to_bytes($value)
     switch (strtoupper($unit)) {
         case 'G':
             $size *= 1024;
+            // no break
         case 'M':
             $size *= 1024;
+            // no break
         case 'K':
             $size *= 1024;
     }
@@ -292,4 +296,66 @@ function e()
 function n($value)
 {
     return Translator::getInstance()->number($value);
+}
+
+/**
+ * Sanitize a file path
+ *
+ * @param  string $path
+ * @return string|false
+ */
+function sanitize_path(string $path): string|false
+{
+    // Handle empty path
+    if (empty($path)) {
+        return false;
+    }
+
+    $dirSeparator = '/';
+
+    // Get Windows drive letter (C:/ or C:\)
+    $driveLetter = '';
+    if (preg_match('/^([a-zA-Z]:)([\/\\\].*)$/', $path, $matches)) {
+        $driveLetter = $matches[1];
+        $path = $matches[2];
+        $dirSeparator = '\\';
+    }
+
+    // If path is not absolute, make it relative to current working directory
+    if ($driveLetter === '' && substr($path, 0, 1) !== '/') {
+        $path = getcwd() . $dirSeparator . $path;
+    }
+
+    // Split path into components
+    $parts = explode($dirSeparator, $path);
+    $resolved = [];
+
+    foreach ($parts as $part) {
+        // Skip empty parts (caused by multiple slashes)
+        if ($part === '' || $part === '.') {
+            continue;
+        }
+
+        // Handle parent directory
+        if ($part === '..') {
+            if (count($resolved) > 0) {
+                array_pop($resolved);
+            }
+            // If we're at root and encounter .., ignore it
+            continue;
+        }
+
+        // Add normal directory/file component
+        $resolved[] = $part;
+    }
+
+    // Reconstruct the path
+    $normalized = ($driveLetter !== '' ? $driveLetter . $dirSeparator : $dirSeparator) . implode($dirSeparator, $resolved);
+
+    // Handle root case
+    if ($normalized === $dirSeparator) {
+        return $dirSeparator;
+    }
+
+    return $normalized;
 }

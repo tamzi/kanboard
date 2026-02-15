@@ -27,7 +27,7 @@ KB.keyboardShortcuts = function () {
 
     KB.onKey('?', function () {
         if (! KB.modal.isOpen()) {
-            KB.modal.open(KB.find('body').data('keyboardShortcutUrl'));
+            KB.modal.open(KB.find('body').data('keyboardShortcutUrl'), '', true);
         }
     });
 

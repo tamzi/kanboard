@@ -24,6 +24,7 @@ class LanguageModel extends Base
     {
         return array(
             'id_ID',
+            'bg_BG',
             'bs_BA',
             'ca_ES',
             'cs_CZ',
@@ -61,6 +62,7 @@ class LanguageModel extends Base
             'th_TH',
             'vi_VN',
             'fa_IR',
+            'ar_SY',
         );
     }
 
@@ -90,6 +92,7 @@ class LanguageModel extends Base
         // Sorted by value
         $languages = array(
             'id_ID' => 'Bahasa Indonesia',
+            'bg_BG' => 'Български',
             'bs_BA' => 'Bosanski',
             'ca_ES' => 'Català',
             'cs_CZ' => 'Čeština',
@@ -101,7 +104,7 @@ class LanguageModel extends Base
             'es_ES' => 'Español (España)',
             'es_VE' => 'Español (Venezuela)',
             'fr_FR' => 'Français',
-            'el_GR' => 'Grec',
+            'el_GR' => 'Greek (Ελληνικά)',
             'hr_HR' => 'Hrvatski',
             'it_IT' => 'Italiano',
             'hu_HU' => 'Magyar',
@@ -127,6 +130,7 @@ class LanguageModel extends Base
             'th_TH' => 'ไทย',
             'vi_VN' => 'Tiếng Việt',
             'fa_IR' => 'فارسی',
+            'ar_SY' => 'عربي',
         );
 
         if ($prepend) {
@@ -145,6 +149,7 @@ class LanguageModel extends Base
     public function getJsLanguageCode()
     {
         $languages = array(
+            'bg_BG' => 'bg',
             'cs_CZ' => 'cs',
             'ca_ES' => 'ca',
             'da_DK' => 'da',
@@ -183,11 +188,30 @@ class LanguageModel extends Base
             'bs_BA' => 'bs',
             'mk_MK' => 'mk',
             'my_MY' => 'my',
+            'ar_SY' => 'ar',
         );
 
         $lang = $this->getCurrentLanguage();
 
         return isset($languages[$lang]) ? $languages[$lang] : 'en';
+    }
+
+    /**
+     * Check if current language requires RTL direction
+     *
+     * @access public
+     * @return bool
+     */
+    public function isRtlLanguage()
+    {
+        $rtlJsLanguageCodes = array(
+            'ar',
+            'fa',
+        );
+
+        $lang = $this->getJsLanguageCode();
+
+        return in_array($lang, $rtlJsLanguageCodes);
     }
 
     /**

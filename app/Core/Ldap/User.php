@@ -37,7 +37,7 @@ class User
      * @param  Query $query
      * @param  Group  $group
      */
-    public function __construct(Query $query, Group $group = null)
+    public function __construct(Query $query, ?Group $group = null)
     {
         $this->query = $query;
         $this->group = $group;
@@ -89,16 +89,17 @@ class User
      */
     protected function getGroups(Entry $entry)
     {
-	$userattr = '';
-	if ('username' == $this->getGroupUserAttribute()) {
-		$userattr = $entry->getFirstValue($this->getAttributeUsername());
-	} else if ('dn' == $this->getGroupUserAttribute()) {
-		$userattr = $entry->getDn();
-	}
+        $userattr = '';
+        if ('username' == $this->getGroupUserAttribute()) {
+            $userattr = $entry->getFirstValue($this->getAttributeUsername());
+        } elseif ('dn' == $this->getGroupUserAttribute()) {
+            $userattr = $entry->getDn();
+        }
         $groupIds = array();
 
         if (! empty($userattr) && $this->group !== null && $this->hasGroupUserFilter()) {
-            $groups = $this->group->find(sprintf($this->getGroupUserFilter(), $userattr));
+            $escapedUserAttribute = ldap_escape($userattr, '', LDAP_ESCAPE_FILTER);
+            $groups = $this->group->find(sprintf($this->getGroupUserFilter(), $escapedUserAttribute));
 
             foreach ($groups as $group) {
                 $groupIds[] = $group->getExternalId();
@@ -124,7 +125,7 @@ class User
         if (! $this->hasGroupsConfigured()) {
             return null;
         }
-	
+
         if (LDAP_USER_DEFAULT_ROLE_MANAGER) {
             $role = Role::APP_MANAGER;
         } else {
@@ -356,9 +357,10 @@ class User
     public function getLdapUserPattern($username, $filter = LDAP_USER_FILTER)
     {
         if (! $filter) {
-            throw new LogicException('LDAP user filter empty, check the parameter LDAP_USER_FILTER');
+            throw new LogicException('LDAP user filter is not configured. Please set the LDAP_USER_FILTER parameter in your configuration file');
         }
 
-        return str_replace('%s', $username, $filter);
+        $escapedUsername = ldap_escape($username, '', LDAP_ESCAPE_FILTER);
+        return str_replace('%s', $escapedUsername, $filter);
     }
 }

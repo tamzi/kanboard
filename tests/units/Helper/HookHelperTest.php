@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../Base.php';
+namespace KanboardTests\units\Helper;
 
+use KanboardTests\units\Base;
 use Kanboard\Helper\HookHelper;
 
 class HookHelperTest extends Base
@@ -24,7 +25,7 @@ class HookHelperTest extends Base
             ->will($this->returnValue('tpl1_content'));
 
         $hookHelper = new HookHelper($this->container);
-        $hookHelper->attachCallable('test', 'tpl1', function() {
+        $hookHelper->attachCallable('test', 'tpl1', function () {
             return array(
                 'k1' => 'v1',
             );
@@ -51,7 +52,7 @@ class HookHelperTest extends Base
             ->will($this->returnValue('tpl1_content'));
 
         $hookHelper = new HookHelper($this->container);
-        $hookHelper->attachCallable('test', 'tpl1', function() {
+        $hookHelper->attachCallable('test', 'tpl1', function () {
         });
 
         $this->assertEquals('tpl1_content', $hookHelper->render('test', array('k0' => 'v0')));
@@ -88,22 +89,12 @@ class HookHelperTest extends Base
             ->getMock();
 
         $this->container['template']
-            ->expects($this->at(0))
+            ->expects($this->any())
             ->method('render')
-            ->with(
-                $this->equalTo('tpl1'),
-                $this->equalTo(array())
-            )
-            ->will($this->returnValue('tpl1_content'));
-
-        $this->container['template']
-            ->expects($this->at(1))
-            ->method('render')
-            ->with(
-                $this->equalTo('tpl2'),
-                $this->equalTo(array())
-            )
-            ->will($this->returnValue('tpl2_content'));
+            ->willReturnMap([
+                ['tpl1', array(), 'tpl1_content'],
+                ['tpl2', array(), 'tpl2_content'],
+            ]);
 
         $hookHelper = new HookHelper($this->container);
         $hookHelper->attach('test', 'tpl1');

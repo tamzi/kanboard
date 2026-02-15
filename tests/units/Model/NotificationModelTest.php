@@ -1,7 +1,8 @@
 <?php
 
-require_once __DIR__.'/../Base.php';
+namespace KanboardTests\units\Model;
 
+use KanboardTests\units\Base;
 use Kanboard\Model\TaskFinderModel;
 use Kanboard\Model\TaskCreationModel;
 use Kanboard\Model\SubtaskModel;
@@ -54,7 +55,7 @@ class NotificationModelTest extends Base
             $this->assertNotEmpty($notificationModel->getTitleWithAuthor('Foobar', $eventName, $eventData));
         }
 
-        $this->assertNotEmpty($notificationModel->getTitleWithoutAuthor(TaskModel::EVENT_OVERDUE, array('tasks' => array(array('id' => 1)))));
+        $this->assertNotEmpty($notificationModel->getTitleWithoutAuthor(TaskModel::EVENT_OVERDUE, array('tasks' => array(array('id' => 1, 'title' => 'test')))));
         $this->assertNotEmpty($notificationModel->getTitleWithoutAuthor('unknown', array()));
     }
 

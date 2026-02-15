@@ -5,6 +5,7 @@ namespace Kanboard\Controller;
 use Kanboard\Core\Controller\PageNotFoundException;
 use Kanboard\Core\Security\Role;
 use Kanboard\Notification\MailNotification;
+use Kanboard\Notification\WebNotification;
 
 /**
  * Class UserInviteController
@@ -46,6 +47,7 @@ class UserInviteController extends BaseController
             'token'        => $invite['token'],
             'errors'       => $errors,
             'values'       => $values + array('email' => $invite['email']),
+            'themes'       => $this->themeModel->getThemes(),
             'timezones'    => $this->timezoneModel->getTimezones(true),
             'languages'    => $this->languageModel->getLanguages(true),
         )));
@@ -91,8 +93,10 @@ class UserInviteController extends BaseController
                 $this->projectUserRoleModel->addUser($invite['project_id'], $user_id, Role::PROJECT_MEMBER);
             }
 
-            if (! empty($values['notifications_enabled'])) {
-                $this->userNotificationTypeModel->saveSelectedTypes($user_id, array(MailNotification::TYPE));
+            if ($this->configModel->get('notifications_enabled', 0) == 1) {
+                $this->userNotificationTypeModel->saveSelectedTypes($user_id, [MailNotification::TYPE, WebNotification::TYPE]);
+            } elseif (! empty($values['notifications_enabled'])) {
+                $this->userNotificationTypeModel->saveSelectedTypes($user_id, [MailNotification::TYPE]);
             }
 
             $this->inviteModel->remove($invite['email']);

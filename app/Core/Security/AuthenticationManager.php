@@ -75,6 +75,10 @@ class AuthenticationManager extends Base
     {
         if ($this->userSession->isLogged()) {
             foreach ($this->filterProviders('SessionCheckProviderInterface') as $provider) {
+                if ($provider instanceof OptionalAuthenticationProviderInterface && ! $provider->isEnabled()) {
+                    continue;
+                }
+
                 if (! $provider->isValidSession()) {
                     $this->logger->debug('Invalidate session for '.$this->userSession->getUsername());
                     session_flush();
@@ -96,8 +100,12 @@ class AuthenticationManager extends Base
     public function preAuthentication()
     {
         foreach ($this->filterProviders('PreAuthenticationProviderInterface') as $provider) {
+            if ($provider instanceof OptionalAuthenticationProviderInterface && ! $provider->isEnabled()) {
+                continue;
+            }
+
             if ($provider->authenticate() && $this->userProfile->initialize($provider->getUser())) {
-                $this->dispatcher->dispatch(self::EVENT_SUCCESS, new AuthSuccessEvent($provider->getName()));
+                $this->dispatcher->dispatch(new AuthSuccessEvent($provider->getName()), self::EVENT_SUCCESS);
                 return true;
             }
         }
@@ -122,7 +130,7 @@ class AuthenticationManager extends Base
 
             if ($provider->authenticate() && $this->userProfile->initialize($provider->getUser())) {
                 if ($fireEvent) {
-                    $this->dispatcher->dispatch(self::EVENT_SUCCESS, new AuthSuccessEvent($provider->getName()));
+                    $this->dispatcher->dispatch(new AuthSuccessEvent($provider->getName()), self::EVENT_SUCCESS);
                 }
 
                 return true;
@@ -130,7 +138,7 @@ class AuthenticationManager extends Base
         }
 
         if ($fireEvent) {
-            $this->dispatcher->dispatch(self::EVENT_FAILURE, new AuthFailureEvent($username));
+            $this->dispatcher->dispatch(new AuthFailureEvent($username), self::EVENT_FAILURE);
         }
 
         return false;
@@ -148,11 +156,11 @@ class AuthenticationManager extends Base
         $provider = $this->getProvider($name);
 
         if ($provider->authenticate() && $this->userProfile->initialize($provider->getUser())) {
-            $this->dispatcher->dispatch(self::EVENT_SUCCESS, new AuthSuccessEvent($provider->getName()));
+            $this->dispatcher->dispatch(new AuthSuccessEvent($provider->getName()), self::EVENT_SUCCESS);
             return true;
         }
 
-        $this->dispatcher->dispatch(self::EVENT_FAILURE, new AuthFailureEvent);
+        $this->dispatcher->dispatch(new AuthFailureEvent, self::EVENT_FAILURE);
 
         return false;
     }
@@ -185,7 +193,7 @@ class AuthenticationManager extends Base
     {
         $interface = '\Kanboard\Core\Security\\'.$interface;
 
-        return array_filter($this->providers, function(AuthenticationProviderInterface $provider) use ($interface) {
+        return array_filter($this->providers, function (AuthenticationProviderInterface $provider) use ($interface) {
             return is_a($provider, $interface);
         });
     }

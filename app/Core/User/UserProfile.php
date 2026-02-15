@@ -51,15 +51,15 @@ class UserProfile extends Base
         if ($user->getInternalId()) {
             $profile = $this->userModel->getById($user->getInternalId());
         } elseif ($user->getExternalIdColumn() && $user->getExternalId()) {
-            $profile = $this->userSync->synchronize($user);
-            if (LDAP_GROUP_SYNC) {
+            $profile = $this->userSync->synchronize($user); // The profile can be null when external user creation is disabled
+            if (LDAP_GROUP_SYNC && ! empty($profile)) {
                 $this->groupSync->synchronize($profile['id'], $user->getExternalGroupIds());
             }
         }
 
         if (! empty($profile) && $profile['is_active'] == 1) {
             $this->userSession->initialize($profile);
-            $this->dispatcher->dispatch(self::EVENT_USER_PROFILE_AFTER_SYNC, new UserProfileSyncEvent($profile, $user));
+            $this->dispatcher->dispatch(new UserProfileSyncEvent($profile, $user), self::EVENT_USER_PROFILE_AFTER_SYNC);
             return true;
         }
 

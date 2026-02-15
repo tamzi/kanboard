@@ -2,7 +2,6 @@
 
 namespace Kanboard\ServiceProvider;
 
-use Kanboard\Core\Cache\FileCache;
 use Kanboard\Core\Cache\MemoryCache;
 use Kanboard\Decorator\ColumnMoveRestrictionCacheDecorator;
 use Kanboard\Decorator\ColumnRestrictionCacheDecorator;
@@ -29,26 +28,20 @@ class CacheProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
-        $container['memoryCache'] = function() {
+        $container['memoryCache'] = function () {
             return new MemoryCache();
         };
 
-        if (CACHE_DRIVER === 'file') {
-            $container['cacheDriver'] = function() {
-                return new FileCache();
-            };
-        } else {
-            $container['cacheDriver'] = $container['memoryCache'];
-        }
+        $container['cacheDriver'] = $container['memoryCache'];
 
-        $container['userCacheDecorator'] = function($c) {
+        $container['userCacheDecorator'] = function ($c) {
             return new UserCacheDecorator(
                 $c['memoryCache'],
                 $c['userModel']
             );
         };
 
-        $container['userMetadataCacheDecorator'] = function($c) {
+        $container['userMetadataCacheDecorator'] = function ($c) {
             return new MetadataCacheDecorator(
                 $c['cacheDriver'],
                 $c['userMetadataModel'],
@@ -57,21 +50,21 @@ class CacheProvider implements ServiceProviderInterface
             );
         };
 
-        $container['columnMoveRestrictionCacheDecorator'] = function($c) {
+        $container['columnMoveRestrictionCacheDecorator'] = function ($c) {
             return new ColumnMoveRestrictionCacheDecorator(
                 $c['memoryCache'],
                 $c['columnMoveRestrictionModel']
             );
         };
 
-        $container['columnRestrictionCacheDecorator'] = function($c) {
+        $container['columnRestrictionCacheDecorator'] = function ($c) {
             return new ColumnRestrictionCacheDecorator(
                 $c['memoryCache'],
                 $c['columnRestrictionModel']
             );
         };
 
-        $container['projectRoleRestrictionCacheDecorator'] = function($c) {
+        $container['projectRoleRestrictionCacheDecorator'] = function ($c) {
             return new ProjectRoleRestrictionCacheDecorator(
                 $c['memoryCache'],
                 $c['projectRoleRestrictionModel']

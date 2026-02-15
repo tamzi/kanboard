@@ -1,5 +1,8 @@
 <?php
 
+namespace KanboardTests\units\Helper;
+
+use KanboardTests\units\Base;
 use Kanboard\Core\Security\Role;
 use Kanboard\Core\User\UserSession;
 use Kanboard\Helper\ProjectRoleHelper;
@@ -13,8 +16,6 @@ use Kanboard\Model\TaskCreationModel;
 use Kanboard\Model\TaskFinderModel;
 use Kanboard\Model\TaskStatusModel;
 use Kanboard\Model\UserModel;
-
-require_once __DIR__.'/../Base.php';
 
 class ProjectRoleHelperTest extends Base
 {
@@ -124,7 +125,7 @@ class ProjectRoleHelperTest extends Base
 
         $this->assertEquals(2, $userModel->create(array('username' => 'user')));
         $this->assertEquals(1, $projectModel->create(array('name' => 'Test')));
-        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1 , 'title' => 'test')));
+        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1, 'title' => 'test')));
 
         $this->assertEquals(1, $projectRoleModel->create(1, 'Custom Role'));
         $this->assertTrue($projectUserRole->addUser(1, 2, 'Custom Role'));
@@ -152,7 +153,7 @@ class ProjectRoleHelperTest extends Base
 
         $this->assertEquals(2, $userModel->create(array('username' => 'user')));
         $this->assertEquals(1, $projectModel->create(array('name' => 'Test')));
-        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1 , 'title' => 'test')));
+        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1, 'title' => 'test')));
 
         $this->assertEquals(1, $projectRoleModel->create(1, 'Custom Role'));
         $this->assertTrue($projectUserRole->addUser(1, 2, 'Custom Role'));
@@ -179,7 +180,7 @@ class ProjectRoleHelperTest extends Base
 
         $this->assertEquals(2, $userModel->create(array('username' => 'user')));
         $this->assertEquals(1, $projectModel->create(array('name' => 'Test')));
-        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1 , 'title' => 'test')));
+        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1, 'title' => 'test')));
 
         $this->assertEquals(1, $projectRoleModel->create(1, 'Custom Role'));
         $this->assertTrue($projectUserRole->addUser(1, 2, 'Custom Role'));
@@ -207,7 +208,7 @@ class ProjectRoleHelperTest extends Base
 
         $this->assertEquals(2, $userModel->create(array('username' => 'user')));
         $this->assertEquals(1, $projectModel->create(array('name' => 'Test')));
-        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1 , 'title' => 'test')));
+        $this->assertEquals(1, $taskCreationModel->create(array('project_id' => 1, 'title' => 'test')));
 
         $this->assertEquals(1, $projectRoleModel->create(1, 'Custom Role'));
         $this->assertTrue($projectUserRole->addUser(1, 2, 'Custom Role'));

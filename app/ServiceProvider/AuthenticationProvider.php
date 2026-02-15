@@ -34,18 +34,22 @@ class AuthenticationProvider implements ServiceProviderInterface
     {
         $container['authenticationManager'] = new AuthenticationManager($container);
         $container['authenticationManager']->register(new TotpAuth($container));
-        $container['authenticationManager']->register(new RememberMeAuth($container));
+
+        if (REMEMBER_ME_AUTH) {
+            $container['authenticationManager']->register(new RememberMeAuth($container));
+        }
+
         $container['authenticationManager']->register(new DatabaseAuth($container));
 
-        if (REVERSE_PROXY_AUTH) {
+        if (REVERSE_PROXY_AUTH && ! empty(TRUSTED_PROXY_NETWORKS)) {
             $container['authenticationManager']->register(new ReverseProxyAuth($container));
         }
 
         $container['authenticationManager']->register(new ApiAccessTokenAuth($container));
-        
+
         if (LDAP_AUTH) {
             $container['authenticationManager']->register(new LdapAuth($container));
-        }     
+        }
 
         $container['projectAccessMap'] = $this->getProjectAccessMap();
         $container['applicationAccessMap'] = $this->getApplicationAccessMap();
@@ -83,16 +87,21 @@ class AuthenticationProvider implements ServiceProviderInterface
         $acl->add('CalendarController', 'save', Role::PROJECT_MEMBER);
         $acl->add('CategoryController', '*', Role::PROJECT_MANAGER);
         $acl->add('ColumnController', '*', Role::PROJECT_MANAGER);
+        $acl->add('ColumnMoveRestrictionController', '*', Role::PROJECT_MANAGER);
+        $acl->add('ColumnRestrictionController', '*', Role::PROJECT_MANAGER);
         $acl->add('CommentController', array('create', 'save', 'edit', 'update', 'confirm', 'remove'), Role::PROJECT_MEMBER);
         $acl->add('CommentListController', array('save'), Role::PROJECT_MEMBER);
         $acl->add('CommentMailController', '*', Role::PROJECT_MEMBER);
         $acl->add('CustomFilterController', '*', Role::PROJECT_MEMBER);
         $acl->add('ExportController', '*', Role::PROJECT_MANAGER);
+        $acl->add('ExternalTaskCreationController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskFileController', array('screenshot', 'create', 'save', 'remove', 'confirm'), Role::PROJECT_MEMBER);
-        $acl->add('ProjectViewController', array('share', 'updateSharing', 'integrations', 'updateIntegrations', 'notifications', 'updateNotifications', 'duplicate', 'doDuplication'), Role::PROJECT_MANAGER);
+        $acl->add('ProjectViewController', array('share', 'updateSharing', 'integrations', 'updateIntegrations', 'notifications', 'updateNotifications', 'duplicate', 'doDuplication', 'importTasks', 'doTasksImport'), Role::PROJECT_MANAGER);
         $acl->add('ProjectPermissionController', '*', Role::PROJECT_MANAGER);
         $acl->add('ProjectEditController', '*', Role::PROJECT_MANAGER);
         $acl->add('ProjectPredefinedContentController', '*', Role::PROJECT_MANAGER);
+        $acl->add('ProjectRoleController', '*', Role::PROJECT_MANAGER);
+        $acl->add('ProjectRoleRestrictionController', '*', Role::PROJECT_MANAGER);
         $acl->add('PredefinedTaskDescriptionController', '*', Role::PROJECT_MANAGER);
         $acl->add('ProjectFileController', '*', Role::PROJECT_MEMBER);
         $acl->add('ProjectUserOverviewController', '*', Role::PROJECT_MANAGER);
@@ -114,6 +123,8 @@ class AuthenticationProvider implements ServiceProviderInterface
         $acl->add('TaskInternalLinkController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskExternalLinkController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskModificationController', '*', Role::PROJECT_MEMBER);
+        $acl->add('TaskMovePositionController', '*', Role::PROJECT_MEMBER);
+        $acl->add('TaskReorderController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskStatusController', '*', Role::PROJECT_MEMBER);
         $acl->add('TaskMailController', '*', Role::PROJECT_MEMBER);
         $acl->add('UserAjaxController', array('mention'), Role::PROJECT_MEMBER);
@@ -162,6 +173,7 @@ class AuthenticationProvider implements ServiceProviderInterface
         $acl->add('UserListController', '*', Role::APP_ADMIN);
         $acl->add('UserStatusController', '*', Role::APP_ADMIN);
         $acl->add('UserCredentialController', array('changeAuthentication', 'saveAuthentication', 'unlock'), Role::APP_ADMIN);
+        $acl->add('UserInviteController', array('show', 'save'), Role::APP_ADMIN);
 
         return $acl;
     }
@@ -219,6 +231,8 @@ class AuthenticationProvider implements ServiceProviderInterface
         $acl->add('TaskProcedure', array('openTask', 'closeTask', 'removeTask', 'moveTaskPosition', 'moveTaskToProject', 'duplicateTaskToProject', 'createTask', 'updateTask'), Role::PROJECT_MEMBER);
         $acl->add('TaskTagProcedure', array('setTaskTags'), Role::PROJECT_MEMBER);
         $acl->add('TagProcedure', array('createTag', 'updateTag', 'removeTag'), Role::PROJECT_MEMBER);
+        $acl->add('ProjectMetaDataProcedure', array('saveProjectMetadata', 'removeProjectMetadata'), Role::PROJECT_MEMBER);
+        $acl->add('TaskMetadataProcedure', array('saveTaskMetadata', 'removeTaskMetadata'), Role::PROJECT_MEMBER);
 
         return $acl;
     }

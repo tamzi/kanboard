@@ -106,11 +106,12 @@ class Csv
      * @static
      * @access public
      * @param  array  $rows
+     * @param  bool   $addBOM
      */
-    public static function output(array $rows)
+    public static function output(array $rows, $addBOM = false)
     {
         $csv = new static;
-        $csv->write('php://output', $rows);
+        $csv->write('php://output', $rows, $addBOM);
     }
 
     /**
@@ -138,7 +139,7 @@ class Csv
     {
         $file = new SplFileObject($filename);
         $file->setFlags(SplFileObject::READ_CSV);
-        $file->setCsvControl($this->delimiter, $this->enclosure);
+        $file->setCsvControl($this->delimiter, $this->enclosure, '\\');
         $line_number = 0;
 
         foreach ($file as $row) {
@@ -160,15 +161,20 @@ class Csv
      * @access public
      * @param  string    $filename
      * @param  array     $rows
+     * @param  bool      $addBOM
      * @return Csv
      */
-    public function write($filename, array $rows)
+    public function write($filename, array $rows, $addBOM = false)
     {
         $fp = fopen($filename, 'w');
 
         if (is_resource($fp)) {
+            if ($addBOM) {
+                fwrite($fp, "\xEF\xBB\xBF");
+            }
+
             foreach ($rows as $row) {
-                fputcsv($fp, $row, $this->delimiter, $this->enclosure);
+                fputcsv($fp, $row, $this->delimiter, $this->enclosure, '\\');
             }
 
             fclose($fp);

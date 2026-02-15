@@ -11,22 +11,32 @@ namespace Kanboard\Core\ObjectStorage;
 class FileStorage implements ObjectStorageInterface
 {
     /**
-     * Base path
+     * Base directory
      *
      * @access private
      * @var string
      */
-    private $path = '';
+    private $baseDir = '';
 
     /**
      * Constructor
      *
      * @access public
-     * @param  string  $path
+     * @param  string  $baseDir
      */
-    public function __construct($path)
+    public function __construct($baseDir)
     {
-        $this->path = $path;
+        $realBaseDir = realpath($baseDir);
+
+        if ($realBaseDir === false) {
+            throw new ObjectStorageException('Invalid base folder: '.$baseDir);
+        }
+
+        if (! is_dir($realBaseDir)) {
+            throw new ObjectStorageException('Base folder is not a directory: '.$baseDir);
+        }
+
+        $this->baseDir = $realBaseDir;
     }
 
     /**
@@ -39,13 +49,7 @@ class FileStorage implements ObjectStorageInterface
      */
     public function get($key)
     {
-        $filename = $this->path.DIRECTORY_SEPARATOR.$key;
-
-        if (! file_exists($filename)) {
-            throw new ObjectStorageException('File not found: '.$filename);
-        }
-
-        return file_get_contents($filename);
+        return file_get_contents($this->getRealFilePath($key));
     }
 
     /**
@@ -58,10 +62,11 @@ class FileStorage implements ObjectStorageInterface
      */
     public function put($key, &$blob)
     {
+        $filename = $this->getSanitizedFilePath($key);
         $this->createFolder($key);
 
-        if (file_put_contents($this->path.DIRECTORY_SEPARATOR.$key, $blob) === false) {
-            throw new ObjectStorageException('Unable to write the file: '.$this->path.DIRECTORY_SEPARATOR.$key);
+        if (file_put_contents($filename, $blob) === false) {
+            throw new ObjectStorageException('Unable to write the file: '.$filename);
         }
     }
 
@@ -74,13 +79,7 @@ class FileStorage implements ObjectStorageInterface
      */
     public function output($key)
     {
-        $filename = $this->path.DIRECTORY_SEPARATOR.$key;
-
-        if (! file_exists($filename)) {
-            throw new ObjectStorageException('File not found: '.$filename);
-        }
-
-        readfile($filename);
+        readfile($this->getRealFilePath($key));
     }
 
     /**
@@ -88,17 +87,21 @@ class FileStorage implements ObjectStorageInterface
      *
      * @access public
      * @throws ObjectStorageException
-     * @param  string  $src_filename
+     * @param  string  $srcFilename
      * @param  string  $key
      * @return boolean
      */
-    public function moveFile($src_filename, $key)
+    public function moveFile($srcFilename, $key)
     {
-        $this->createFolder($key);
-        $dst_filename = $this->path.DIRECTORY_SEPARATOR.$key;
+        if (! file_exists($srcFilename)) {
+            throw new ObjectStorageException('Source file does not exist: '.$srcFilename);
+        }
 
-        if (! rename($src_filename, $dst_filename)) {
-            throw new ObjectStorageException('Unable to move the file: '.$src_filename.' to '.$dst_filename);
+        $dstFilename = $this->getSanitizedFilePath($key);
+        $this->createFolder($key);
+
+        if (! rename($srcFilename, $dstFilename)) {
+            throw new ObjectStorageException('Unable to move the file: '.$srcFilename.' to '.$dstFilename);
         }
 
         return true;
@@ -108,14 +111,20 @@ class FileStorage implements ObjectStorageInterface
      * Move uploaded file to object storage
      *
      * @access public
-     * @param  string  $filename
+     * @param  string  $srcFilename
      * @param  string  $key
      * @return boolean
      */
-    public function moveUploadedFile($filename, $key)
+    public function moveUploadedFile($srcFilename, $key)
     {
+        if (! file_exists($srcFilename)) {
+            throw new ObjectStorageException('Source file does not exist: '.$srcFilename);
+        }
+
+        $dstFilename = $this->getSanitizedFilePath($key);
         $this->createFolder($key);
-        return move_uploaded_file($filename, $this->path.DIRECTORY_SEPARATOR.$key);
+
+        return move_uploaded_file($srcFilename, $dstFilename);
     }
 
     /**
@@ -127,37 +136,62 @@ class FileStorage implements ObjectStorageInterface
      */
     public function remove($key)
     {
-        $filename = $this->path.DIRECTORY_SEPARATOR.$key;
-        $result = false;
+        $filename = $this->getRealFilePath($key);
+        $result = unlink($filename);
 
-        if (file_exists($filename)) {
-            $result = unlink($filename);
+        // Remove parent folder if empty
+        $parentFolder = dirname($filename);
+        $files = glob($parentFolder.DIRECTORY_SEPARATOR.'*');
 
-            // Remove parent folder if empty
-            $parentFolder = dirname($filename);
-            $files = glob($parentFolder.DIRECTORY_SEPARATOR.'*');
-
-            if ($files !== false && is_dir($parentFolder) && count($files) === 0) {
-                rmdir($parentFolder);
-            }
+        if ($files !== false && is_dir($parentFolder) && count($files) === 0) {
+            rmdir($parentFolder);
         }
 
         return $result;
     }
 
-    /**
-     * Create object folder
-     *
-     * @access private
-     * @throws ObjectStorageException
-     * @param  string  $key
-     */
-    private function createFolder($key)
+    private function createFolder(string $key)
     {
-        $folder = strpos($key, DIRECTORY_SEPARATOR) !== false ? $this->path.DIRECTORY_SEPARATOR.dirname($key) : $this->path;
+        $folder = strpos($key, DIRECTORY_SEPARATOR) !== false ? $this->baseDir.DIRECTORY_SEPARATOR.dirname($key) : $this->baseDir;
 
-        if (! is_dir($folder) && ! mkdir($folder, 0755, true)) {
+        if (! is_dir($folder) && ! mkdir($folder, 0o755, true)) {
             throw new ObjectStorageException('Unable to create folder: '.$folder);
+        }
+    }
+
+    private function getRealFilePath(string $key): string
+    {
+        $filename = $this->baseDir.DIRECTORY_SEPARATOR.$key;
+
+        // Resolve the real path and make sure the file exists
+        $realFilePath = realpath($filename);
+        if ($realFilePath === false) {
+            throw new ObjectStorageException('Invalid file path: '.$filename);
+        }
+
+        $this->validateBasePath($realFilePath);
+
+        return $realFilePath;
+    }
+
+    public function getSanitizedFilePath(string $key): string
+    {
+        $filename = $this->baseDir.DIRECTORY_SEPARATOR.$key;
+        $sanitizedKey = sanitize_path($filename);
+
+        if ($sanitizedKey === false) {
+            throw new ObjectStorageException('Invalid file path: '.$key);
+        }
+
+        $this->validateBasePath($sanitizedKey);
+
+        return $sanitizedKey;
+    }
+
+    private function validateBasePath(string $filePath)
+    {
+        if (strpos($filePath, $this->baseDir) !== 0) {
+            throw new ObjectStorageException('File '.$filePath.' is not in base directory: '.$this->baseDir);
         }
     }
 }

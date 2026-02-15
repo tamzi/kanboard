@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__.'/BaseProcedureTest.php';
+namespace KanboardTests\integration;
+
+use Kanboard\Core\Security\Role;
 
 class CommentProcedureTest extends BaseProcedureTest
 {
@@ -23,6 +25,7 @@ class CommentProcedureTest extends BaseProcedureTest
             'task_id' => $this->taskId,
             'user_id' => 1,
             'content' => 'foobar',
+            'visibility' => Role::APP_USER,
         ));
 
         $this->assertNotFalse($this->commentId);
@@ -36,11 +39,12 @@ class CommentProcedureTest extends BaseProcedureTest
         $this->assertEquals(1, $comment['user_id']);
         $this->assertEquals('foobar', $comment['comment']);
         $this->assertEquals($comment['date_creation'], $comment['date_modification']);
+        $this->assertEquals(Role::APP_USER, $comment['role']);
     }
 
     public function assertUpdateComment()
     {
-        sleep(1); // Integration test fails because its too fast 
+        sleep(1); // Integration test fails because its too fast
         $this->assertTrue($this->app->execute('updateComment', array(
             'id' => $this->commentId,
             'content' => 'test',
